@@ -14,6 +14,9 @@ if (!gl) {
   alert('WebGL no está disponible en este navegador.');
 }
 
+// Límite máximo de textura soportado por la GPU del dispositivo (vital para móviles)
+const MAX_GPU_TEXTURE_SIZE = Math.min(gl.getParameter(gl.MAX_TEXTURE_SIZE) || 4096, 4096);
+
 // Shaders GLSL
 const VERTEX_SHADER_SRC = `
   attribute vec2 a_position;
@@ -151,29 +154,49 @@ let texture2 = null;
 let img1Ready = false;
 let img2Ready = false;
 
-// Cargar y preprocesar Patrón 1
+// Cargar Patrón 1 y Patrón 2 con soporte WebP y fallback PNG
 const img1 = new Image();
 const img2 = new Image();
-img1.src = 'Patron_1.png';
-img2.src = 'Patron_2.png';
 
-img1.onload = () => {
-  w1 = img1.naturalWidth;
-  h1 = img1.naturalHeight;
-  const processedData = preprocessPatron1(img1, w1, h1);
+function loadImageWithFallback(imgElement, webpPath, pngPath, onLoaded) {
+  imgElement.onload = () => onLoaded(imgElement);
+  imgElement.onerror = () => {
+    if (imgElement.src.endsWith(webpPath)) {
+      console.warn(`No se encontró ${webpPath}, intentando ${pngPath}...`);
+      imgElement.src = pngPath;
+    } else {
+      console.error(`Error cargando imagen ${pngPath}`);
+    }
+  };
+  imgElement.src = webpPath;
+}
+
+loadImageWithFallback(img1, 'Patron_1.webp', 'Patron_1.png', (loadedImg) => {
+  // Ajustar resolución máxima para que quepa en la GPU del móvil
+  const origW = loadedImg.naturalWidth;
+  const origH = loadedImg.naturalHeight;
+  const scale = Math.min(1.0, MAX_GPU_TEXTURE_SIZE / Math.max(origW, origH));
+  w1 = Math.round(origW * scale);
+  h1 = Math.round(origH * scale);
+
+  const processedData = preprocessPatron1(loadedImg, w1, h1);
   texture1 = uploadTexture(processedData, w1, h1, 0);
   img1Ready = true;
   checkReady();
-};
+});
 
-img2.onload = () => {
-  w2 = img2.naturalWidth;
-  h2 = img2.naturalHeight;
-  const processedData = preprocessPatron2(img2, w2, h2);
+loadImageWithFallback(img2, 'Patron_2.webp', 'Patron_2.png', (loadedImg) => {
+  const origW = loadedImg.naturalWidth;
+  const origH = loadedImg.naturalHeight;
+  const scale = Math.min(1.0, MAX_GPU_TEXTURE_SIZE / Math.max(origW, origH));
+  w2 = Math.round(origW * scale);
+  h2 = Math.round(origH * scale);
+
+  const processedData = preprocessPatron2(loadedImg, w2, h2);
   texture2 = uploadTexture(processedData, w2, h2, 1);
   img2Ready = true;
   checkReady();
-};
+});
 
 function uploadTexture(data, width, height, unit) {
   const tex = gl.createTexture();
@@ -199,7 +222,7 @@ function preprocessPatron1(image, w, h) {
   offscreen.width = w;
   offscreen.height = h;
   const oCtx = offscreen.getContext('2d');
-  oCtx.drawImage(image, 0, 0);
+  oCtx.drawImage(image, 0, 0, w, h);
   const rawData = oCtx.getImageData(0, 0, w, h).data;
 
   const total = w * h;
@@ -210,6 +233,8 @@ function preprocessPatron1(image, w, h) {
   const isWhite = new Uint8Array(total);
   for (let i = 0; i < total; i++) {
     const p = i * 4;
+    const a = rawData[p + 3];
+    if (a < 50) continue; // Transparente es fondo
     const brightness = 0.299 * rawData[p] + 0.587 * rawData[p + 1] + 0.114 * rawData[p + 2];
     if (brightness >= 220) isWhite[i] = 1;
   }
@@ -287,6 +312,12 @@ function preprocessPatron1(image, w, h) {
 
   for (let i = 0; i < total; i++) {
     const p = i * 4;
+    const a = rawData[p + 3];
+    if (a < 50) {
+      outTypes[i] = 0; // Transparente = Fondo
+      continue;
+    }
+
     const brightness = 0.299 * rawData[p] + 0.587 * rawData[p + 1] + 0.114 * rawData[p + 2];
 
     if (brightness < 80) {
@@ -310,28 +341,42 @@ function preprocessPatron1(image, w, h) {
   return outTypes;
 }
 
-// Preprocesado de Patrón 2
+// Preprocesado de Patrón 2 (Robusto para RGB y Alpha)
 function preprocessPatron2(image, w, h) {
   const offscreen = document.createElement('canvas');
   offscreen.width = w;
   offscreen.height = h;
   const oCtx = offscreen.getContext('2d');
-  oCtx.drawImage(image, 0, 0);
+  oCtx.drawImage(image, 0, 0, w, h);
   const data = oCtx.getImageData(0, 0, w, h).data;
 
   const total = w * h;
   const out = new Uint8Array(total);
 
+  // Determinar si el fondo es negro con líneas blancas o transparente con líneas
   for (let i = 0; i < total; i++) {
     const p = i * 4;
-    const brightness = 0.299 * data[p] + 0.587 * data[p + 1] + 0.114 * data[p + 2];
-    out[i] = brightness > 60 ? 1 : 0;
+    const a = data[p + 3];
+    const r = data[p];
+    const g = data[p + 1];
+    const b = data[p + 2];
+    const brightness = 0.299 * r + 0.587 * g + 0.114 * b;
+
+    // Si tiene canal alpha transparente, las líneas son los píxeles opacos (a > 50)
+    // Si es imagen opaca (RGB sin alpha), las líneas son los píxeles claros (brillo > 50)
+    if (a < 50) {
+      out[i] = 0; // Fondo transparente
+    } else if (brightness > 50) {
+      out[i] = 1; // Línea blanca / clara
+    } else {
+      out[i] = 0; // Fondo negro
+    }
   }
 
   return out;
 }
 
-// Ajuste dinámico de resolución
+// Ajuste dinámico de resolución de pantalla
 function resize() {
   const dpr = Math.min(window.devicePixelRatio || 1, 2); // Cap a 2x DPR para máxima eficiencia en móvil
   const width = Math.round(window.innerWidth * dpr);
