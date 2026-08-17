@@ -413,27 +413,21 @@ function checkReady() {
     if (introScreen) {
       setTimeout(() => {
         introScreen.classList.add('fade-out');
-        introScreenOpen = false;
         introScreen.addEventListener('transitionend', (e) => {
           if (e.target === introScreen && e.propertyName === 'opacity') {
             introScreen.style.display = 'none';
           }
         });
       }, 100);
-    } else {
-      introScreenOpen = false;
     }
 
     requestAnimationFrame(renderLoop);
   }
 }
 
-// Bucle de animación en GPU
+// Bucle de animación continua en GPU
 let animTime = 0;
 let lastTime = performance.now();
-let dragX = 0;
-let dragY = 0;
-let introScreenOpen = true;
 
 function renderLoop(currentTime) {
   const dt = (currentTime - lastTime) / 1000;
@@ -441,16 +435,16 @@ function renderLoop(currentTime) {
 
   animTime += dt * CONFIG.speed;
 
-  // Ondulación fluida proporcional a las dimensiones reales de la imagen
+  // Ondulación fluida continua
   const ampX = w1 * 0.07;
   const ampY = h1 * 0.07;
 
-  const off1X = dragX + Math.sin(animTime * 0.28) * ampX + Math.cos(animTime * 0.13) * (ampX * 0.5);
-  const off1Y = dragY + Math.cos(animTime * 0.22) * ampY + Math.sin(animTime * 0.17) * (ampY * 0.5);
+  const off1X = Math.sin(animTime * 0.28) * ampX + Math.cos(animTime * 0.13) * (ampX * 0.5);
+  const off1Y = Math.cos(animTime * 0.22) * ampY + Math.sin(animTime * 0.17) * (ampY * 0.5);
 
   const t2 = animTime * CONFIG.driftRatio;
-  const off2X = dragX + Math.sin(t2 * 0.25 + 1.6) * (ampX * 0.9) + Math.cos(t2 * 0.18 + 0.8) * (ampX * 0.6) + (w1 * 0.08);
-  const off2Y = dragY + Math.cos(t2 * 0.21 + 2.1) * (ampY * 0.9) + Math.sin(t2 * 0.14 + 1.2) * (ampY * 0.5) + (h1 * 0.08);
+  const off2X = Math.sin(t2 * 0.25 + 1.6) * (ampX * 0.9) + Math.cos(t2 * 0.18 + 0.8) * (ampX * 0.6) + (w1 * 0.08);
+  const off2Y = Math.cos(t2 * 0.21 + 2.1) * (ampY * 0.9) + Math.sin(t2 * 0.14 + 1.2) * (ampY * 0.5) + (h1 * 0.08);
 
   gl.useProgram(program);
   gl.uniform2f(uResolutionLoc, canvas.width, canvas.height);
@@ -473,50 +467,3 @@ function renderLoop(currentTime) {
 
   requestAnimationFrame(renderLoop);
 }
-
-// Soporte de interacción táctil y ratón
-let isDragging = false;
-let lastMouseX = 0;
-let lastMouseY = 0;
-
-window.addEventListener('mousedown', (e) => {
-  if (introScreenOpen) return;
-  isDragging = true;
-  lastMouseX = e.clientX;
-  lastMouseY = e.clientY;
-});
-
-window.addEventListener('mouseup', () => { isDragging = false; });
-
-window.addEventListener('mousemove', (e) => {
-  if (!isDragging) return;
-  const dx = e.clientX - lastMouseX;
-  const dy = e.clientY - lastMouseY;
-  lastMouseX = e.clientX;
-  lastMouseY = e.clientY;
-
-  dragX -= dx * (1 / CONFIG.zoom);
-  dragY -= dy * (1 / CONFIG.zoom);
-});
-
-window.addEventListener('touchstart', (e) => {
-  if (introScreenOpen) return;
-  if (e.touches.length === 1) {
-    isDragging = true;
-    lastMouseX = e.touches[0].clientX;
-    lastMouseY = e.touches[0].clientY;
-  }
-}, { passive: true });
-
-window.addEventListener('touchend', () => { isDragging = false; });
-
-window.addEventListener('touchmove', (e) => {
-  if (!isDragging || e.touches.length !== 1) return;
-  const dx = e.touches[0].clientX - lastMouseX;
-  const dy = e.touches[0].clientY - lastMouseY;
-  lastMouseX = e.touches[0].clientX;
-  lastMouseY = e.touches[0].clientY;
-
-  dragX -= dx * (1 / CONFIG.zoom);
-  dragY -= dy * (1 / CONFIG.zoom);
-}, { passive: true });
