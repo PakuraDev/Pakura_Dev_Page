@@ -396,6 +396,24 @@ function checkReady() {
   if (img1Ready && img2Ready) {
     gl.uniform2f(uImgSize1Loc, w1, h1);
     gl.uniform2f(uImgSize2Loc, w2, h2);
+
+    // Desvanecer la pantalla de carga suavemente
+    const introScreen = document.getElementById('introScreen');
+    if (introScreen) {
+      // Pequeño retardo de 100ms para asegurar que el primer fotograma WebGL ya está pintado
+      setTimeout(() => {
+        introScreen.classList.add('fade-out');
+        introScreenOpen = false;
+        introScreen.addEventListener('transitionend', (e) => {
+          if (e.target === introScreen && e.propertyName === 'opacity') {
+            introScreen.style.display = 'none';
+          }
+        });
+      }, 100);
+    } else {
+      introScreenOpen = false;
+    }
+
     requestAnimationFrame(renderLoop);
   }
 }
@@ -405,6 +423,7 @@ let animTime = 0;
 let lastTime = performance.now();
 let dragX = 0;
 let dragY = 0;
+let introScreenOpen = true;
 
 function renderLoop(currentTime) {
   const dt = (currentTime - lastTime) / 1000;
@@ -430,23 +449,6 @@ function renderLoop(currentTime) {
   gl.drawArrays(gl.TRIANGLES, 0, 6);
 
   requestAnimationFrame(renderLoop);
-}
-
-// Control de la pantalla inicial
-let introScreenOpen = true;
-const exploreBtn = document.getElementById('exploreBtn');
-const introScreen = document.getElementById('introScreen');
-
-if (exploreBtn && introScreen) {
-  exploreBtn.addEventListener('click', () => {
-    introScreenOpen = false;
-    introScreen.classList.add('slide-up');
-    introScreen.addEventListener('transitionend', (e) => {
-      if (e.target === introScreen && e.propertyName === 'transform') {
-        introScreen.style.display = 'none';
-      }
-    });
-  });
 }
 
 // Soporte de interacción táctil y ratón
