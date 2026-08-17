@@ -28,7 +28,12 @@ const VERTEX_SHADER_SRC = `
 `;
 
 const FRAGMENT_SHADER_SRC = `
-  precision highp float;
+  #ifdef GL_FRAGMENT_PRECISION_HIGH
+    precision highp float;
+  #else
+    precision mediump float;
+  #endif
+
   varying vec2 v_uv;
 
   uniform sampler2D u_texture1;
@@ -48,9 +53,9 @@ const FRAGMENT_SHADER_SRC = `
   const vec3 COLOR_BLANCO_I = vec3(0.6275, 0.9137, 0.9373); // #A0E9EF
   const vec3 COLOR_BLANCO_S = vec3(0.7961, 0.9686, 0.9804); // #CBF7FA
 
-  // Función de espejado continuo (Mirrored Repeat)
+  // Función de espejado continuo (Mirrored Repeat) segura para coordenadas negativas
   vec2 mirrorCoord(vec2 uv) {
-    vec2 m = mod(uv, 2.0);
+    vec2 m = mod(mod(uv, 2.0) + 2.0, 2.0);
     vec2 mirrored = mix(m, 2.0 - m, step(1.0, m));
     return clamp(mirrored, 0.0, 0.99999);
   }
@@ -64,24 +69,24 @@ const FRAGMENT_SHADER_SRC = `
     vec2 uv1 = mirrorCoord((srcPix + u_off1) / u_imgSize1);
     vec2 uv2 = mirrorCoord((srcPix + u_off2) / u_imgSize2);
 
-    float t1 = floor(texture2D(u_texture1, uv1).r * 255.0 + 0.5);
-    float t2 = floor(texture2D(u_texture2, uv2).r * 255.0 + 0.5);
+    float t1 = texture2D(u_texture1, uv1).r;
+    float t2 = texture2D(u_texture2, uv2).r;
 
     vec3 finalColor;
 
-    /* Jerarquía de capas:
-       t1: 3 = Blanco Superior (Núcleo)
-           2 = Blanco Inferior (Borde)
-           1 = Línea Patrón 1 (Gris)
-           0 = Fondo
-       t2: 1 = Línea Patrón 2 (Blanco)
-           0 = Fondo
+    /* Jerarquía de capas (escalado en [0.0, 1.0]):
+       t1: > 0.85 = Blanco Superior (Núcleo)
+           > 0.50 = Blanco Inferior (Borde)
+           > 0.15 = Línea Patrón 1 (Gris)
+           <= 0.15 = Fondo
+       t2: > 0.50 = Línea Patrón 2 (Olas de agua)
+           <= 0.50 = Fondo
     */
-    if (t1 == 3.0) {
+    if (t1 > 0.85) {
       finalColor = COLOR_BLANCO_S;
-    } else if (t1 == 2.0) {
+    } else if (t1 > 0.50) {
       finalColor = COLOR_BLANCO_I;
-    } else if (t1 == 1.0) {
+    } else if (t1 > 0.15) {
       finalColor = (t2 > 0.5) ? COLOR_AZUL3 : COLOR_AZUL2;
     } else {
       finalColor = (t2 > 0.5) ? COLOR_AZUL1 : COLOR_BASE;
@@ -154,22 +159,10 @@ let texture2 = null;
 let img1Ready = false;
 let img2Ready = false;
 
-// Detección dinámica de variante según pantalla y tipo de conexión
+// Detección de dispositivo: PC-HD vs Mobile-HD
 function getOptimalAssetVariant() {
   const isMobile = window.innerWidth <= 768 || /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-  
-  const isSaveDataOrSlow = !!(conn && (
-    conn.saveData === true || 
-    ['slow-2g', '2g', '3g'].includes(conn.effectiveType) ||
-    conn.type === 'cellular'
-  ));
-
-  if (isMobile) {
-    return isSaveDataOrSlow ? 'Mobile-SD' : 'Mobile-HD';
-  } else {
-    return isSaveDataOrSlow ? 'PC-SD' : 'PC-HD';
-  }
+  return isMobile ? 'Mobile-HD' : 'PC-HD';
 }
 
 const currentVariant = getOptimalAssetVariant();
@@ -345,9 +338,9 @@ function preprocessPatron1(image, w, h) {
     const brightness = 0.299 * rawData[p] + 0.587 * rawData[p + 1] + 0.114 * rawData[p + 2];
 
     if (brightness < 80) {
-      outTypes[i] = 0; // Fondo
+      outTypes[i] = 0;   // Fondo
     } else if (brightness < 220) {
-      outTypes[i] = 1; // Línea gris
+      outTypes[i] = 85;  // Línea gris (~0.33)
     } else {
       const blobId = blobIdMap[i];
       const dist = distField[i];
@@ -355,9 +348,9 @@ function preprocessPatron1(image, w, h) {
       const threshold = Math.max(1.8, maxD * (1 - CONFIG.innerScale));
 
       if (dist >= threshold && maxD > 1.5) {
-        outTypes[i] = 3; // Blanco Superior (Núcleo)
+        outTypes[i] = 255; // Blanco Superior (Núcleo 1.0)
       } else {
-        outTypes[i] = 2; // Blanco Inferior (Borde)
+        outTypes[i] = 170; // Blanco Inferior (Borde ~0.66)
       }
     }
   }
@@ -365,7 +358,7 @@ function preprocessPatron1(image, w, h) {
   return outTypes;
 }
 
-// Preprocesado de Patrón 2 (Robusto para RGB y Alpha)
+// Preprocesado de Patrón 2 (Robusto para RGB, Alpha y Grayscale)
 function preprocessPatron2(image, w, h) {
   const offscreen = document.createElement('canvas');
   offscreen.width = w;
@@ -377,7 +370,6 @@ function preprocessPatron2(image, w, h) {
   const total = w * h;
   const out = new Uint8Array(total);
 
-  // Determinar si el fondo es negro con líneas blancas o transparente con líneas
   for (let i = 0; i < total; i++) {
     const p = i * 4;
     const a = data[p + 3];
@@ -386,14 +378,12 @@ function preprocessPatron2(image, w, h) {
     const b = data[p + 2];
     const brightness = 0.299 * r + 0.587 * g + 0.114 * b;
 
-    // Si tiene canal alpha transparente, las líneas son los píxeles opacos (a > 50)
-    // Si es imagen opaca (RGB sin alpha), las líneas son los píxeles claros (brillo > 50)
     if (a < 50) {
-      out[i] = 0; // Fondo transparente
+      out[i] = 0;   // Fondo transparente
     } else if (brightness > 50) {
-      out[i] = 1; // Línea blanca / clara
+      out[i] = 255; // Línea blanca / clara (1.0)
     } else {
-      out[i] = 0; // Fondo negro
+      out[i] = 0;   // Fondo negro
     }
   }
 
@@ -418,13 +408,9 @@ resize();
 
 function checkReady() {
   if (img1Ready && img2Ready) {
-    gl.uniform2f(uImgSize1Loc, w1, h1);
-    gl.uniform2f(uImgSize2Loc, w2, h2);
-
     // Desvanecer la pantalla de carga suavemente
     const introScreen = document.getElementById('introScreen');
     if (introScreen) {
-      // Pequeño retardo de 100ms para asegurar que el primer fotograma WebGL ya está pintado
       setTimeout(() => {
         introScreen.classList.add('fade-out');
         introScreenOpen = false;
@@ -466,9 +452,22 @@ function renderLoop(currentTime) {
   const off2X = dragX + Math.sin(t2 * 0.25 + 1.6) * (ampX * 0.9) + Math.cos(t2 * 0.18 + 0.8) * (ampX * 0.6) + (w1 * 0.08);
   const off2Y = dragY + Math.cos(t2 * 0.21 + 2.1) * (ampY * 0.9) + Math.sin(t2 * 0.14 + 1.2) * (ampY * 0.5) + (h1 * 0.08);
 
+  gl.useProgram(program);
   gl.uniform2f(uResolutionLoc, canvas.width, canvas.height);
+  gl.uniform2f(uImgSize1Loc, w1, h1);
+  gl.uniform2f(uImgSize2Loc, w2, h2);
   gl.uniform2f(uOff1Loc, off1X, off1Y);
   gl.uniform2f(uOff2Loc, off2X, off2Y);
+  gl.uniform1f(uZoomLoc, CONFIG.zoom);
+
+  // Asegurar enlace de texturas en cada fotograma
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, texture1);
+  gl.uniform1i(uTex1Loc, 0);
+
+  gl.activeTexture(gl.TEXTURE1);
+  gl.bindTexture(gl.TEXTURE_2D, texture2);
+  gl.uniform1i(uTex2Loc, 1);
 
   gl.drawArrays(gl.TRIANGLES, 0, 6);
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
 Script de automatización para generar variantes optimizadas en escala de grises WebP (q=90).
+Solo mantiene PC-HD (1.0x) y Mobile-HD (0.4x).
 """
 import os
 from PIL import Image
@@ -10,15 +11,13 @@ ASSETS_DIR = os.path.join(BASE_DIR, "Assets")
 
 VARIANTS = [
     ("PC-HD", 1.0),
-    ("PC-SD", 0.75),
-    ("Mobile-HD", 0.4),
-    ("Mobile-SD", 0.25)
+    ("Mobile-HD", 0.4)
 ]
 
 PATTERNS = ["Patron_1", "Patron_2"]
 
 def main():
-    print("=== Generando variantes optimizadas WebP ===")
+    print("=== Generando variantes optimizadas WebP (PC-HD / Mobile-HD) ===")
     for name in PATTERNS:
         src_path = os.path.join(ASSETS_DIR, f"{name}-PC-HD.webp")
         if not os.path.exists(src_path):
@@ -26,7 +25,7 @@ def main():
             continue
 
         print(f"\nProcesando {name} desde {src_path}...")
-        img = Image.open(src_path).convert("L") # Escala de grises (1 canal)
+        img = Image.open(src_path).convert("L")
         orig_w, orig_h = img.size
         print(f"Dimensiones originales: {orig_w}x{orig_h}")
 
