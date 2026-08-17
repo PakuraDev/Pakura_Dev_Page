@@ -396,9 +396,11 @@ if (exploreBtn && introScreen) {
   exploreBtn.addEventListener('click', () => {
     introScreenOpen = false;
     introScreen.classList.add('slide-up');
-    introScreen.addEventListener('transitionend', () => {
-      introScreen.style.display = 'none';
-    }, { once: true });
+    introScreen.addEventListener('transitionend', (e) => {
+      if (e.target === introScreen && e.propertyName === 'transform') {
+        introScreen.style.display = 'none';
+      }
+    });
   });
 }
 
