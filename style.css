@@ -74,3 +74,27 @@ html, body {
   width: 100vw;
   height: 100vh;
 }
+
+/* Contenedor y estilos de nenúfares de esquina */
+.lily-pads-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 10;
+}
+
+.lily-pad {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  object-fit: contain;
+  max-width: 32vw;
+  max-height: 32vh;
+  filter: drop-shadow(0 5px 14px rgba(12, 60, 70, 0.22));
+  will-change: transform;
+}

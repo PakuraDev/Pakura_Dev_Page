@@ -429,6 +429,7 @@ function checkReady() {
 
 // Bucle de animación continua en GPU
 let animTime = 0;
+let floatClock = 0;
 let lastTime = performance.now();
 
 function renderLoop(currentTime) {
@@ -436,8 +437,9 @@ function renderLoop(currentTime) {
   lastTime = currentTime;
 
   animTime += dt * CONFIG.speed;
+  floatClock += dt;
 
-  // Ondulación fluida continua
+  // Ondulación fluida continua del agua
   const ampX = w1 * 0.07;
   const ampY = h1 * 0.07;
 
@@ -467,5 +469,185 @@ function renderLoop(currentTime) {
 
   gl.drawArrays(gl.TRIANGLES, 0, 6);
 
+  // Animación de flotación orgánica, visible y armónica de los nenúfares
+  for (let i = 0; i < activeLilyPads.length; i++) {
+    const pad = activeLilyPads[i];
+    const dx = Math.sin(floatClock * pad.freqX + pad.phaseX) * pad.ampX 
+             + Math.cos(floatClock * (pad.freqX * 0.5) + pad.phaseY) * (pad.ampX * 0.4);
+    const dy = Math.cos(floatClock * pad.freqY + pad.phaseY) * pad.ampY 
+             + Math.sin(floatClock * (pad.freqY * 0.6) + pad.phaseX) * (pad.ampY * 0.4);
+    const sway = Math.sin(floatClock * (pad.freqX * 0.7) + pad.phaseX) * pad.swayAmp;
+
+    pad.el.style.transform = `translate3d(${dx.toFixed(2)}px, ${dy.toFixed(2)}px, 0) rotate(${(pad.baseRot + sway).toFixed(2)}deg) scale(${pad.flipX}, 1)`;
+  }
+
   requestAnimationFrame(renderLoop);
 }
+
+// Lista global de nenúfares activos para animación
+const activeLilyPads = [];
+
+// Genera un ángulo aleatorio evitando ángulos rectos exactos (0, 90, 180, 270)
+function getRandomNonRightAngle() {
+  const quadrants = [
+    { min: 0.1, max: 89.9 },
+    { min: 90.1, max: 179.9 },
+    { min: 180.1, max: 269.9 },
+    { min: 270.1, max: 359.9 }
+  ];
+  const q = quadrants[Math.floor(Math.random() * quadrants.length)];
+  return (q.min + Math.random() * (q.max - q.min)).toFixed(1);
+}
+
+// Inicialización de nenúfares con distribución por lados y máxima separación global
+function initLilyPads() {
+  const container = document.getElementById('lilyPadsContainer') || document.body;
+  container.innerHTML = '';
+  activeLilyPads.length = 0;
+  
+  const availableImages = [
+    'Assets/esquina_1.webp',
+    'Assets/esquina_2.webp',
+    'Assets/esquina_3.webp'
+  ];
+
+  // 4 lados posibles: 'top', 'bottom', 'left', 'right'
+  const availableSides = ['top', 'bottom', 'left', 'right'];
+
+  // Siempre 3 nenúfares, exactamente 1 por lado distinto
+  const count = 3;
+
+  // Barajar imágenes y lados sin repetición
+  const shuffledImages = [...availableImages].sort(() => Math.random() - 0.5);
+  const shuffledSides = [...availableSides].sort(() => Math.random() - 0.5);
+
+  const screenW = window.innerWidth;
+  const screenH = window.innerHeight;
+  const sideMargin = 50;
+
+  // Precalcular especificaciones de tamaño y orientación para cada nenúfar
+  const padSpecs = [];
+  for (let i = 0; i < count; i++) {
+    const sizeVw = (Math.random() * (24 - 15) + 15).toFixed(1); // 15vw - 24vw
+    const minPx = Math.round(115 + Math.random() * 25);         // 115px - 140px
+    const maxPx = Math.round(230 + Math.random() * 50);         // 230px - 280px
+    const estimatedWidth = Math.min(Math.max(minPx, screenW * (parseFloat(sizeVw) / 100)), maxPx);
+    const estimatedHeight = estimatedWidth * 0.85;
+    const rot = getRandomNonRightAngle();
+    const flipX = Math.random() < 0.5 ? 1 : -1;
+
+    padSpecs.push({
+      imgSrc: shuffledImages[i],
+      side: shuffledSides[i],
+      sizeVw,
+      minPx,
+      maxPx,
+      estimatedWidth,
+      estimatedHeight,
+      rot,
+      flipX
+    });
+  }
+
+  // Optimización global Max-Min Distance: probar múltiples disposiciones completas y elegir la de mayor dispersión
+  let bestConfig = null;
+  let bestMinDist = -1;
+
+  for (let attempt = 0; attempt < 200; attempt++) {
+    const candidatePositions = [];
+
+    for (let i = 0; i < count; i++) {
+      const spec = padSpecs[i];
+      const side = spec.side;
+      const depth = Math.round(40 + Math.random() * 70); // 40px a 110px
+      let posX = 0;
+      let posY = 0;
+      let cx = 0;
+      let cy = 0;
+
+      if (side === 'top' || side === 'bottom') {
+        const minX = sideMargin;
+        const maxX = Math.max(minX, screenW - sideMargin - spec.estimatedWidth);
+        posX = Math.round(minX + Math.random() * (maxX - minX));
+        cx = posX + spec.estimatedWidth / 2;
+        cy = side === 'top' ? (depth + spec.estimatedHeight / 2) : (screenH - depth - spec.estimatedHeight / 2);
+      } else {
+        const minY = sideMargin;
+        const maxY = Math.max(minY, screenH - sideMargin - spec.estimatedHeight);
+        posY = Math.round(minY + Math.random() * (maxY - minY));
+        cx = side === 'left' ? (depth + spec.estimatedWidth / 2) : (screenW - depth - spec.estimatedWidth / 2);
+        cy = posY + spec.estimatedHeight / 2;
+      }
+
+      candidatePositions.push({ depth, posX, posY, cx, cy });
+    }
+
+    // Calcular la separación mínima entre cualquier par de nenúfares
+    const d01 = Math.hypot(candidatePositions[0].cx - candidatePositions[1].cx, candidatePositions[0].cy - candidatePositions[1].cy);
+    const d12 = Math.hypot(candidatePositions[1].cx - candidatePositions[2].cx, candidatePositions[1].cy - candidatePositions[2].cy);
+    const d20 = Math.hypot(candidatePositions[2].cx - candidatePositions[0].cx, candidatePositions[2].cy - candidatePositions[0].cy);
+    const minPairDist = Math.min(d01, d12, d20);
+
+    if (minPairDist > bestMinDist) {
+      bestMinDist = minPairDist;
+      bestConfig = candidatePositions;
+    }
+  }
+
+  // Renderizar los 3 nenúfares con la mejor configuración encontrada
+  for (let i = 0; i < count; i++) {
+    const spec = padSpecs[i];
+    const pos = bestConfig[i];
+    const side = spec.side;
+
+    const img = document.createElement('img');
+    img.src = spec.imgSrc;
+    img.alt = 'Nenúfares decorativos';
+    img.className = 'lily-pad';
+    img.style.width = `clamp(${spec.minPx}px, ${spec.sizeVw}vw, ${spec.maxPx}px)`;
+
+    if (side === 'top' || side === 'bottom') {
+      if (side === 'top') {
+        img.style.top = `${pos.depth}px`;
+      } else {
+        img.style.bottom = `${pos.depth}px`;
+      }
+      img.style.left = `${pos.posX}px`;
+    } else {
+      if (side === 'left') {
+        img.style.left = `${pos.depth}px`;
+      } else {
+        img.style.right = `${pos.depth}px`;
+      }
+      img.style.top = `${pos.posY}px`;
+    }
+
+    img.style.transform = `rotate(${spec.rot}deg) scale(${spec.flipX}, 1)`;
+
+    // Registrar datos de física de flotación activa (movimiento sutil y relajante)
+    activeLilyPads.push({
+      el: img,
+      baseRot: parseFloat(spec.rot),
+      flipX: spec.flipX,
+      phaseX: Math.random() * Math.PI * 2,
+      phaseY: Math.random() * Math.PI * 2,
+      freqX: 0.70 + Math.random() * 0.30, // Ciclo pausado de 6 a 9 segundos
+      freqY: 0.60 + Math.random() * 0.25,
+      ampX: 5.0 + Math.random() * 2.5,   // Deriva sutil de 5px a 7.5px
+      ampY: 4.5 + Math.random() * 2.0,   // Deriva sutil de 4.5px a 6.5px
+      swayAmp: 1.8 + Math.random() * 0.8 // Cabeceo suave de ±1.8° a ±2.6°
+    });
+
+    container.appendChild(img);
+  }
+}
+
+// Ejecutar colocación de nenúfares
+initLilyPads();
+
+
+
+
+
+
+
