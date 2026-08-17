@@ -154,25 +154,49 @@ let texture2 = null;
 let img1Ready = false;
 let img2Ready = false;
 
-// Cargar Patrón 1 y Patrón 2 con soporte WebP y fallback PNG
+// Detección dinámica de variante según pantalla y tipo de conexión
+function getOptimalAssetVariant() {
+  const isMobile = window.innerWidth <= 768 || /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  
+  const isSaveDataOrSlow = !!(conn && (
+    conn.saveData === true || 
+    ['slow-2g', '2g', '3g'].includes(conn.effectiveType) ||
+    conn.type === 'cellular'
+  ));
+
+  if (isMobile) {
+    return isSaveDataOrSlow ? 'Mobile-SD' : 'Mobile-HD';
+  } else {
+    return isSaveDataOrSlow ? 'PC-SD' : 'PC-HD';
+  }
+}
+
+const currentVariant = getOptimalAssetVariant();
+console.log(`[AssetLoader] Variante seleccionada: ${currentVariant}`);
+
 const img1 = new Image();
 const img2 = new Image();
 
-function loadImageWithFallback(imgElement, webpPath, pngPath, onLoaded) {
+function loadImage(imgElement, path, fallbackPath, onLoaded) {
   imgElement.onload = () => onLoaded(imgElement);
   imgElement.onerror = () => {
-    if (imgElement.src.endsWith(webpPath)) {
-      console.warn(`No se encontró ${webpPath}, intentando ${pngPath}...`);
-      imgElement.src = pngPath;
+    if (fallbackPath && imgElement.src !== fallbackPath) {
+      console.warn(`No se pudo cargar ${path}, usando fallback ${fallbackPath}...`);
+      imgElement.src = fallbackPath;
     } else {
-      console.error(`Error cargando imagen ${pngPath}`);
+      console.error(`Error crítico cargando imagen ${path}`);
     }
   };
-  imgElement.src = webpPath;
+  imgElement.src = path;
 }
 
-loadImageWithFallback(img1, 'Patron_1.webp', 'Patron_1.png', (loadedImg) => {
-  // Ajustar resolución máxima para que quepa en la GPU del móvil
+const p1Path = `Assets/Patron_1-${currentVariant}.webp`;
+const p2Path = `Assets/Patron_2-${currentVariant}.webp`;
+const p1Fallback = 'Assets/Patron_1-PC-HD.webp';
+const p2Fallback = 'Assets/Patron_2-PC-HD.webp';
+
+loadImage(img1, p1Path, p1Fallback, (loadedImg) => {
   const origW = loadedImg.naturalWidth;
   const origH = loadedImg.naturalHeight;
   const scale = Math.min(1.0, MAX_GPU_TEXTURE_SIZE / Math.max(origW, origH));
@@ -185,7 +209,7 @@ loadImageWithFallback(img1, 'Patron_1.webp', 'Patron_1.png', (loadedImg) => {
   checkReady();
 });
 
-loadImageWithFallback(img2, 'Patron_2.webp', 'Patron_2.png', (loadedImg) => {
+loadImage(img2, p2Path, p2Fallback, (loadedImg) => {
   const origW = loadedImg.naturalWidth;
   const origH = loadedImg.naturalHeight;
   const scale = Math.min(1.0, MAX_GPU_TEXTURE_SIZE / Math.max(origW, origH));
@@ -221,7 +245,7 @@ function preprocessPatron1(image, w, h) {
   const offscreen = document.createElement('canvas');
   offscreen.width = w;
   offscreen.height = h;
-  const oCtx = offscreen.getContext('2d');
+  const oCtx = offscreen.getContext('2d', { willReadFrequently: true });
   oCtx.drawImage(image, 0, 0, w, h);
   const rawData = oCtx.getImageData(0, 0, w, h).data;
 
@@ -346,7 +370,7 @@ function preprocessPatron2(image, w, h) {
   const offscreen = document.createElement('canvas');
   offscreen.width = w;
   offscreen.height = h;
-  const oCtx = offscreen.getContext('2d');
+  const oCtx = offscreen.getContext('2d', { willReadFrequently: true });
   oCtx.drawImage(image, 0, 0, w, h);
   const data = oCtx.getImageData(0, 0, w, h).data;
 
