@@ -34,8 +34,8 @@ def main():
             if factor == 1.0:
                 target_img = img
             else:
-                nw = int(round(orig_w * factor))
-                nh = int(round(orig_h * factor))
+                nw = int(round(orig_w * factor / 4.0)) * 4
+                nh = int(round(orig_h * factor / 4.0)) * 4
                 target_img = img.resize((nw, nh), Image.Resampling.LANCZOS)
 
             target_img.save(target_path, "WEBP", quality=90, method=6)

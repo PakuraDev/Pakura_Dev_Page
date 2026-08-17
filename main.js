@@ -220,6 +220,8 @@ function uploadTexture(data, width, height, unit) {
   gl.activeTexture(gl.TEXTURE0 + unit);
   gl.bindTexture(gl.TEXTURE_2D, tex);
 
+  gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+
   gl.texImage2D(
     gl.TEXTURE_2D, 0, gl.LUMINANCE, width, height, 0,
     gl.LUMINANCE, gl.UNSIGNED_BYTE, data
