@@ -645,6 +645,121 @@ function initLilyPads() {
 // Ejecutar colocación de nenúfares
 initLilyPads();
 
+// ==========================================
+// Control de Audio Ambiental en Bucle
+// ==========================================
+function initBackgroundAudio() {
+  const bgAudio = document.getElementById('bgAudio');
+  const toggleBtn = document.getElementById('audioToggle');
+  const iconOn = document.getElementById('audioIconOn');
+  const iconOff = document.getElementById('audioIconOff');
+
+  if (!bgAudio || !toggleBtn) return;
+
+  const TARGET_VOLUME = 0.45;
+  bgAudio.volume = 0;
+  let isPlaying = false;
+  let fadeInterval = null;
+
+  function fadeInAudio(target = TARGET_VOLUME, duration = 1200) {
+    if (fadeInterval) clearInterval(fadeInterval);
+    const stepTime = 50;
+    const stepVolume = (target - bgAudio.volume) / (duration / stepTime);
+
+    fadeInterval = setInterval(() => {
+      if (bgAudio.volume + stepVolume >= target) {
+        bgAudio.volume = target;
+        clearInterval(fadeInterval);
+        fadeInterval = null;
+      } else {
+        bgAudio.volume += stepVolume;
+      }
+    }, stepTime);
+  }
+
+  function fadeOutAudio(duration = 400, onComplete) {
+    if (fadeInterval) clearInterval(fadeInterval);
+    const stepTime = 50;
+    const stepVolume = bgAudio.volume / (duration / stepTime);
+
+    fadeInterval = setInterval(() => {
+      if (bgAudio.volume - stepVolume <= 0) {
+        bgAudio.volume = 0;
+        clearInterval(fadeInterval);
+        fadeInterval = null;
+        if (onComplete) onComplete();
+      } else {
+        bgAudio.volume -= stepVolume;
+      }
+    }, stepTime);
+  }
+
+  function updateIcons(playing) {
+    if (playing) {
+      if (iconOn) iconOn.classList.remove('hidden');
+      if (iconOff) iconOff.classList.add('hidden');
+      toggleBtn.setAttribute('title', 'Silenciar sonido');
+      toggleBtn.setAttribute('aria-label', 'Silenciar sonido');
+    } else {
+      if (iconOn) iconOn.classList.add('hidden');
+      if (iconOff) iconOff.classList.remove('hidden');
+      toggleBtn.setAttribute('title', 'Activar sonido');
+      toggleBtn.setAttribute('aria-label', 'Activar sonido');
+    }
+  }
+
+  function startAudio() {
+    if (isPlaying && !bgAudio.paused) return;
+    const playPromise = bgAudio.play();
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => {
+          isPlaying = true;
+          updateIcons(true);
+          fadeInAudio();
+        })
+        .catch(() => {
+          isPlaying = false;
+          updateIcons(false);
+        });
+    }
+  }
+
+  function pauseAudio() {
+    fadeOutAudio(300, () => {
+      bgAudio.pause();
+      isPlaying = false;
+      updateIcons(false);
+    });
+  }
+
+  toggleBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (isPlaying && !bgAudio.paused) {
+      pauseAudio();
+    } else {
+      startAudio();
+    }
+  });
+
+  // Intentar reproducir automáticamente y escuchar la primera interacción si el navegador bloquea autoplay
+  startAudio();
+
+  const handleFirstInteraction = () => {
+    if (!isPlaying || bgAudio.paused) {
+      startAudio();
+    }
+  };
+
+  window.addEventListener('click', handleFirstInteraction, { once: true });
+  window.addEventListener('touchstart', handleFirstInteraction, { once: true });
+  window.addEventListener('keydown', handleFirstInteraction, { once: true });
+}
+
+// Inicializar audio
+initBackgroundAudio();
+
+
 
 
 
