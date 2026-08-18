@@ -656,7 +656,7 @@ function initBackgroundAudio() {
 
   if (!bgAudio || !toggleBtn) return;
 
-  const TARGET_VOLUME = 0.45;
+  const TARGET_VOLUME = 0.85;
   bgAudio.volume = 0;
   let isPlaying = false;
   let fadeInterval = null;
