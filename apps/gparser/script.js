@@ -59,7 +59,8 @@ elements.btnDownload.addEventListener('click', downloadMarkdown);
 
 function handleFile(file) {
   if (!file) return;
-  originalFileName = file.name.replace(/\.[^/.]+$/, "") || "conversacion";
+  originalFileName = file.name.includes('.') ? file.name.replace(/\.[^/.]+$/, "") : file.name;
+  if (!originalFileName) originalFileName = "conversacion";
 
   const reader = new FileReader();
   reader.onload = (e) => {
@@ -68,7 +69,7 @@ function handleFile(file) {
       const json = JSON.parse(content);
       processConversation(json);
     } catch (error) {
-      alert("Error al leer el archivo JSON: " + error.message);
+      alert("Error al leer el archivo: " + error.message);
     }
   };
   reader.readAsText(file);

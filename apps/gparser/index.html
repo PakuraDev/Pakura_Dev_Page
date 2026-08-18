@@ -14,10 +14,10 @@
         <img src="../../assets/icons/chevron-left.svg" alt="Volver" width="22" height="22" />
       </a>
 
-      <button id="btnUpload" class="btn-upload" aria-label="Subir archivo" title="Subir archivo JSON">
+      <button id="btnUpload" class="btn-upload" aria-label="Subir archivo" title="Subir archivo">
         Subir archivo
       </button>
-      <input type="file" id="fileInput" accept=".json,application/json,text/plain" class="hidden-input" />
+      <input type="file" id="fileInput" class="hidden-input" />
 
       <button id="btnDownload" class="header-btn" aria-label="Descargar Markdown" title="Descargar .md" disabled>
         <img src="../../assets/icons/download.svg" alt="Descargar" width="22" height="22" />
@@ -27,7 +27,7 @@
     <!-- Contenedor central (Preview del log limpio) -->
     <main class="bento-container" id="dropZone">
       <div id="emptyState" class="empty-state">
-        <p class="empty-title">Arrastra un archivo JSON aquí o pulsa "Subir archivo"</p>
+        <p class="empty-title">Arrastra un archivo aquí o pulsa "Subir archivo"</p>
         <p class="empty-subtitle">Se limpiará la conversación y se preparará para exportar a .md</p>
       </div>
       <div id="previewContent" class="preview-content" style="display: none;"></div>
