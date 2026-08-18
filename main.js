@@ -184,10 +184,10 @@ function loadImage(imgElement, path, fallbackPath, onLoaded) {
   imgElement.src = path;
 }
 
-const p1Path = `Assets/Patron_1-${currentVariant}.webp`;
-const p2Path = `Assets/Patron_2-${currentVariant}.webp`;
-const p1Fallback = 'Assets/Patron_1-PC-HD.webp';
-const p2Fallback = 'Assets/Patron_2-PC-HD.webp';
+const p1Path = `assets/water/Patron_1-${currentVariant}.webp`;
+const p2Path = `assets/water/Patron_2-${currentVariant}.webp`;
+const p1Fallback = 'assets/water/Patron_1-PC-HD.webp';
+const p2Fallback = 'assets/water/Patron_2-PC-HD.webp';
 
 loadImage(img1, p1Path, p1Fallback, (loadedImg) => {
   const origW = loadedImg.naturalWidth;
@@ -506,9 +506,9 @@ function initLilyPads() {
   activeLilyPads.length = 0;
   
   const availableImages = [
-    'Assets/esquina_1.webp',
-    'Assets/esquina_2.webp',
-    'Assets/esquina_3.webp'
+    'assets/water/esquina_1.webp',
+    'assets/water/esquina_2.webp',
+    'assets/water/esquina_3.webp'
   ];
 
   // 4 lados posibles: 'top', 'bottom', 'left', 'right'
