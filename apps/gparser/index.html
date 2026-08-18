@@ -2,20 +2,38 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>GParser - Pakura</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="app-container">
+  <div class="page-container">
+    <!-- Header Superior -->
     <header class="app-header">
-      <a href="../../index.html" class="back-btn">← Volver al Bento</a>
-      <h1>GParser</h1>
+      <a href="../../index.html" class="header-btn" aria-label="Volver al Bento" title="Volver al Bento">
+        <img src="../../assets/icons/chevron-left.svg" alt="Volver" width="22" height="22" />
+      </a>
+
+      <button id="btnUpload" class="btn-upload" aria-label="Subir archivo" title="Subir archivo JSON">
+        Subir archivo
+      </button>
+      <input type="file" id="fileInput" accept=".json,application/json,text/plain" class="hidden-input" />
+
+      <button id="btnDownload" class="header-btn" aria-label="Descargar Markdown" title="Descargar .md" disabled>
+        <img src="../../assets/icons/download.svg" alt="Descargar" width="22" height="22" />
+      </button>
     </header>
-    <main class="app-content">
-      <!-- Contenido de GParser -->
+
+    <!-- Contenedor central (Preview del log limpio) -->
+    <main class="bento-container" id="dropZone">
+      <div id="emptyState" class="empty-state">
+        <p class="empty-title">Arrastra un archivo JSON aquí o pulsa "Subir archivo"</p>
+        <p class="empty-subtitle">Se limpiará la conversación y se preparará para exportar a .md</p>
+      </div>
+      <div id="previewContent" class="preview-content" style="display: none;"></div>
     </main>
   </div>
-  <script src="app.js"></script>
+
+  <script src="script.js"></script>
 </body>
 </html>

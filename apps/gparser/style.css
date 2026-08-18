@@ -1,26 +1,241 @@
+/* Fuentes locales Plus Jakarta Sans */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../../assets/fonts/PlusJakartaSans-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('../../assets/fonts/PlusJakartaSans-500.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('../../assets/fonts/PlusJakartaSans-600.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../../assets/fonts/PlusJakartaSans-700.woff2') format('woff2');
+}
+
+:root {
+  --negro-800: #1a1a1a;
+  --negro-700: #262626;
+  --negro-600: #333333;
+  --blanco-50: #ffffff;
+  --blanco-100: #f0f0f0;
+  --aqua-500: #00e5ff;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background-color: #f8fafc;
-  color: #1e293b;
-  min-height: 100vh;
-  padding: 2rem;
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--blanco-50);
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+/* Contenedor principal a pantalla completa */
+.page-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: var(--blanco-50);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header superior (40px) */
 .app-header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  width: 100%;
+  height: 40px;
+  margin-bottom: 16px;
+  padding: 0;
 }
-.back-btn {
-  color: #0284c7;
+
+/* Botones circulares (Atrás y Descargar) */
+.header-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--negro-800);
+  border: none;
+  outline: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
   text-decoration: none;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.header-btn:hover:not(:disabled) {
+  background: var(--negro-700);
+  transform: scale(1.06);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.24);
+}
+
+.header-btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.header-btn:disabled {
+  opacity: 0.28;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Botón central 'Subir archivo' */
+.btn-upload {
+  height: 40px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--negro-800);
+  color: var(--blanco-50);
+  border: none;
+  outline: none;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px;
   font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
-.back-btn:hover {
-  text-decoration: underline;
+
+.btn-upload:hover {
+  background: var(--negro-700);
+  transform: scale(1.04);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
 }
+
+.btn-upload:active {
+  transform: scale(0.97);
+}
+
+.hidden-input {
+  display: none;
+}
+
+/* Contenedor central Bento */
+.bento-container {
+  flex: 1;
+  width: 100%;
+  background: var(--negro-800);
+  border-radius: 24px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border: 2px solid transparent;
+  transition: border-color 0.25s ease, background-color 0.25s ease;
+}
+
+.bento-container.dragover {
+  border-color: var(--aqua-500);
+  background: #202020;
+}
+
+/* Estado vacío */
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 32px;
+  color: #888888;
+  user-select: none;
+  gap: 8px;
+}
+
+.empty-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #f0f0f0;
+  letter-spacing: -0.2px;
+}
+
+.empty-subtitle {
+  font-size: 13px;
+  color: #777777;
+}
+
+/* Previsualización del contenido */
+.preview-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 28px 32px;
+  font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  color: #f0f0f0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Scrollbar sutil para el preview */
+.preview-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.preview-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.preview-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+
+.preview-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+@media (max-width: 599px) {
+  .page-container {
+    padding: 16px;
+  }
+
+  .preview-content {
+    padding: 20px 18px;
+    font-size: 14px;
+  }
+}
+
