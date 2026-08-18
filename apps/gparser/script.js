@@ -105,6 +105,21 @@ function extractTextFromChunk(chunk) {
   return "";
 }
 
+function formatTimestamp(isoString) {
+  if (!isoString) return "";
+  try {
+    const d = new Date(isoString);
+    if (isNaN(d.getTime())) return "";
+    const dd = String(d.getDate()).padStart(2, '0');
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const hh = String(d.getHours()).padStart(2, '0');
+    const min = String(d.getMinutes()).padStart(2, '0');
+    return ` · ${dd}/${mm} · ${hh}:${min}`;
+  } catch (e) {
+    return "";
+  }
+}
+
 function processConversation(json) {
   let chunks = [];
 
@@ -147,7 +162,8 @@ function processConversation(json) {
     const text = extractTextFromChunk(chunk);
     if (!text) continue;
 
-    markdownBlocks.push(`### ${roleLabel}\n\n${text}`);
+    const timeStr = formatTimestamp(chunk.createTime || chunk.timestamp || chunk.createdAt);
+    markdownBlocks.push(`### ${roleLabel}${timeStr}\n\n${text}`);
   }
 
   if (markdownBlocks.length === 0) {
@@ -162,6 +178,9 @@ function processConversation(json) {
   elements.previewContent.style.display = 'block';
   elements.previewContent.textContent = processedMarkdown;
   elements.btnDownload.removeAttribute('disabled');
+
+  // Actualizar el botón central con el nombre del archivo cargado
+  elements.btnUpload.textContent = originalFileName;
 }
 
 function downloadMarkdown() {
