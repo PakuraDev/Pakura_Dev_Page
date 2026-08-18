@@ -410,19 +410,6 @@ resize();
 
 function checkReady() {
   if (img1Ready && img2Ready) {
-    // Desvanecer la pantalla de carga suavemente
-    const introScreen = document.getElementById('introScreen');
-    if (introScreen) {
-      setTimeout(() => {
-        introScreen.classList.add('fade-out');
-        introScreen.addEventListener('transitionend', (e) => {
-          if (e.target === introScreen && e.propertyName === 'opacity') {
-            introScreen.style.display = 'none';
-          }
-        });
-      }, 100);
-    }
-
     requestAnimationFrame(renderLoop);
   }
 }
@@ -646,17 +633,16 @@ function initLilyPads() {
 initLilyPads();
 
 // ==========================================
-// Control de Audio Ambiental en Bucle
+// Control de Audio Ambiental y Pantalla Inicial
 // ==========================================
 function initBackgroundAudio() {
   const bgAudio = document.getElementById('bgAudio');
-  const toggleBtn = document.getElementById('audioToggle');
-  const iconOn = document.getElementById('audioIconOn');
-  const iconOff = document.getElementById('audioIconOff');
+  const btnVerMar = document.getElementById('btnVerMar');
+  const welcomeScreen = document.getElementById('welcomeScreen');
 
-  if (!bgAudio || !toggleBtn) return;
+  if (!bgAudio) return;
 
-  const TARGET_VOLUME = 0.85;
+  const TARGET_VOLUME = 0.70;
   bgAudio.volume = 0;
   let isPlaying = false;
   let fadeInterval = null;
@@ -677,37 +663,6 @@ function initBackgroundAudio() {
     }, stepTime);
   }
 
-  function fadeOutAudio(duration = 400, onComplete) {
-    if (fadeInterval) clearInterval(fadeInterval);
-    const stepTime = 50;
-    const stepVolume = bgAudio.volume / (duration / stepTime);
-
-    fadeInterval = setInterval(() => {
-      if (bgAudio.volume - stepVolume <= 0) {
-        bgAudio.volume = 0;
-        clearInterval(fadeInterval);
-        fadeInterval = null;
-        if (onComplete) onComplete();
-      } else {
-        bgAudio.volume -= stepVolume;
-      }
-    }, stepTime);
-  }
-
-  function updateIcons(playing) {
-    if (playing) {
-      if (iconOn) iconOn.classList.remove('hidden');
-      if (iconOff) iconOff.classList.add('hidden');
-      toggleBtn.setAttribute('title', 'Silenciar sonido');
-      toggleBtn.setAttribute('aria-label', 'Silenciar sonido');
-    } else {
-      if (iconOn) iconOn.classList.add('hidden');
-      if (iconOff) iconOff.classList.remove('hidden');
-      toggleBtn.setAttribute('title', 'Activar sonido');
-      toggleBtn.setAttribute('aria-label', 'Activar sonido');
-    }
-  }
-
   function startAudio() {
     if (isPlaying && !bgAudio.paused) return;
     const playPromise = bgAudio.play();
@@ -715,45 +670,23 @@ function initBackgroundAudio() {
       playPromise
         .then(() => {
           isPlaying = true;
-          updateIcons(true);
           fadeInAudio();
         })
         .catch(() => {
           isPlaying = false;
-          updateIcons(false);
         });
     }
   }
 
-  function pauseAudio() {
-    fadeOutAudio(300, () => {
-      bgAudio.pause();
-      isPlaying = false;
-      updateIcons(false);
+  if (btnVerMar && welcomeScreen) {
+    btnVerMar.addEventListener('click', () => {
+      welcomeScreen.classList.add('fade-out');
+      setTimeout(() => {
+        welcomeScreen.style.display = 'none';
+      }, 600);
+      startAudio();
     });
   }
-
-  toggleBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (isPlaying && !bgAudio.paused) {
-      pauseAudio();
-    } else {
-      startAudio();
-    }
-  });
-
-  // Intentar reproducir automáticamente y escuchar la primera interacción si el navegador bloquea autoplay
-  startAudio();
-
-  const handleFirstInteraction = () => {
-    if (!isPlaying || bgAudio.paused) {
-      startAudio();
-    }
-  };
-
-  window.addEventListener('click', handleFirstInteraction, { once: true });
-  window.addEventListener('touchstart', handleFirstInteraction, { once: true });
-  window.addEventListener('keydown', handleFirstInteraction, { once: true });
 }
 
 // Inicializar audio

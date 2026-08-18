@@ -7,11 +7,9 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="introScreen" class="intro-screen">
-    <div class="intro-content">
-      <div class="loader-spinner"></div>
-      <h1 class="intro-title">Cargando...</h1>
-    </div>
+  <!-- Pantalla principal temporal (blanca con botón 'Ver el mar') -->
+  <div id="welcomeScreen" class="welcome-screen">
+    <button id="btnVerMar" class="btn-ver-mar">Ver el mar</button>
   </div>
 
   <canvas id="glCanvas"></canvas>
@@ -22,19 +20,6 @@
     <source src="assets/water/sound.opus" type="audio/ogg; codecs=opus" />
     <source src="assets/water/sound.mp3" type="audio/mpeg" />
   </audio>
-
-  <!-- Botón flotante para alternar sonido -->
-  <button id="audioToggle" class="audio-toggle" aria-label="Alternar sonido" title="Alternar sonido">
-    <svg id="audioIconOn" class="audio-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-      <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-    </svg>
-    <svg id="audioIconOff" class="audio-icon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-      <line x1="23" y1="9" x2="17" y2="15"></line>
-      <line x1="17" y1="9" x2="23" y2="15"></line>
-    </svg>
-  </button>
 
   <script src="main.js"></script>
 </body>

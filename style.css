@@ -12,8 +12,8 @@ html, body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-/* Pantalla de carga blanca con desvanecimiento */
-.intro-screen {
+/* Pantalla blanca temporal con botón 'Ver el mar' */
+.welcome-screen {
   position: fixed;
   top: 0;
   left: 0;
@@ -24,49 +24,45 @@ html, body {
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-direction: column;
-  cursor: default;
   opacity: 1;
   visibility: visible;
-  transition: opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.9s ease;
+  transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.6s ease;
   will-change: opacity, visibility;
 }
 
-.intro-screen.fade-out {
+.welcome-screen.fade-out {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
 }
 
-.intro-content {
-  text-align: center;
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.2rem;
-}
-
-.intro-title {
+.btn-ver-mar {
+  padding: 14px 34px;
+  font-size: 1.15rem;
+  font-weight: 500;
   color: #1b353f;
-  font-size: clamp(1.4rem, 3.5vw, 2rem);
-  font-weight: 600;
-  letter-spacing: -0.3px;
+  background: #ffffff;
+  border: 1.5px solid #d0e7ed;
+  border-radius: 999px;
+  box-shadow: 0 4px 16px rgba(55, 182, 197, 0.12);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+  letter-spacing: -0.2px;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
-.loader-spinner {
-  width: 44px;
-  height: 44px;
-  border: 4px solid rgba(55, 182, 197, 0.2);
-  border-top-color: #37B6C5;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+.btn-ver-mar:hover {
+  background: #f4fcfe;
+  border-color: #37B6C5;
+  color: #0b222a;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(55, 182, 197, 0.22);
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+.btn-ver-mar:active {
+  transform: translateY(0) scale(0.98);
 }
 
 #glCanvas {
@@ -97,49 +93,4 @@ html, body {
   max-height: 32vh;
   filter: drop-shadow(0 5px 14px rgba(12, 60, 70, 0.22));
   will-change: transform;
-}
-
-/* Botón flotante de audio */
-.audio-toggle {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.75);
-  background: rgba(255, 255, 255, 0.35);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 4px 16px rgba(12, 60, 70, 0.18);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  z-index: 50;
-  color: #1b353f;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  outline: none;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.audio-toggle:hover {
-  background: rgba(255, 255, 255, 0.65);
-  transform: scale(1.08);
-  box-shadow: 0 6px 20px rgba(12, 60, 70, 0.24);
-}
-
-.audio-toggle:active {
-  transform: scale(0.95);
-}
-
-.audio-icon {
-  width: 22px;
-  height: 22px;
-  pointer-events: none;
-  transition: opacity 0.2s ease;
-}
-
-.audio-icon.hidden {
-  display: none;
 }
