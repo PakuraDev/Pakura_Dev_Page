@@ -1,3 +1,45 @@
+/* Fuentes locales Plus Jakarta Sans */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('assets/fonts/PlusJakartaSans-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('assets/fonts/PlusJakartaSans-500.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('assets/fonts/PlusJakartaSans-600.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('assets/fonts/PlusJakartaSans-700.woff2') format('woff2');
+}
+
+:root {
+  --negro-800: #1a1a1a;
+  --negro-700: #262626;
+  --negro-600: #333333;
+  --blanco-50: #ffffff;
+  --blanco-100: #f0f0f0;
+  --aqua-500: #00e5ff;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -9,60 +51,124 @@ html, body {
   height: 100%;
   overflow: hidden;
   background: #37B6C5;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Pantalla blanca temporal con botón 'Ver el mar' */
-.welcome-screen {
+/* Contenedor de la página principal */
+.page-container {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: #ffffff;
-  z-index: 1000;
+  background: var(--blanco-50);
+  z-index: 100;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
+  padding: 16px 24px 24px 24px;
   opacity: 1;
   visibility: visible;
   transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.6s ease;
   will-change: opacity, visibility;
 }
 
-.welcome-screen.fade-out {
+.page-container.fade-out {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
 }
 
-.btn-ver-mar {
-  padding: 14px 34px;
-  font-size: 1.15rem;
-  font-weight: 500;
-  color: #1b353f;
-  background: #ffffff;
-  border: 1.5px solid #d0e7ed;
-  border-radius: 999px;
-  box-shadow: 0 4px 16px rgba(55, 182, 197, 0.12);
-  cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+/* Header superior */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 48px;
+  margin-bottom: 16px;
+  padding: 0 2px;
+}
+
+.header-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--negro-800);
+  border: none;
   outline: none;
-  letter-spacing: -0.2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14);
+  user-select: none;
   -webkit-tap-highlight-color: transparent;
+}
+
+.header-btn:hover {
+  background: var(--negro-700);
+  transform: scale(1.06);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.24);
+}
+
+.header-btn:active {
+  transform: scale(0.95);
+}
+
+.status-phrase {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--negro-800);
+  letter-spacing: -0.2px;
+  text-align: center;
   user-select: none;
 }
 
-.btn-ver-mar:hover {
-  background: #f4fcfe;
-  border-color: #37B6C5;
-  color: #0b222a;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(55, 182, 197, 0.22);
+.phrase-desktop {
+  display: inline;
 }
 
-.btn-ver-mar:active {
-  transform: translateY(0) scale(0.98);
+.phrase-mobile {
+  display: none;
+}
+
+/* Contenedor central (Bento / Linktree) con bordes de 24px */
+.bento-container {
+  flex: 1;
+  width: 100%;
+  background: var(--negro-800);
+  border-radius: 24px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Responsive para pantallas móviles (< 600px) */
+@media (max-width: 599px) {
+  .page-container {
+    padding: 12px 16px 16px 16px;
+  }
+
+  .app-header {
+    height: 44px;
+    margin-bottom: 12px;
+  }
+
+  .status-phrase {
+    font-size: 14px;
+  }
+
+  .phrase-desktop {
+    display: none;
+  }
+
+  .phrase-mobile {
+    display: inline;
+  }
 }
 
 #glCanvas {

@@ -638,7 +638,7 @@ initLilyPads();
 function initBackgroundAudio() {
   const bgAudio = document.getElementById('bgAudio');
   const btnVerMar = document.getElementById('btnVerMar');
-  const welcomeScreen = document.getElementById('welcomeScreen');
+  const pageContainer = document.getElementById('pageContainer');
 
   if (!bgAudio) return;
 
@@ -678,18 +678,29 @@ function initBackgroundAudio() {
     }
   }
 
-  if (btnVerMar && welcomeScreen) {
-    btnVerMar.addEventListener('click', () => {
-      welcomeScreen.classList.add('fade-out');
+  if (btnVerMar && pageContainer) {
+    btnVerMar.addEventListener('click', (e) => {
+      e.stopPropagation();
+      pageContainer.classList.add('fade-out');
       setTimeout(() => {
-        welcomeScreen.style.display = 'none';
+        pageContainer.style.display = 'none';
       }, 600);
       startAudio();
+    });
+
+    // Hacer clic en el mar/fondo permite volver a la página principal
+    window.addEventListener('click', () => {
+      if (pageContainer.style.display === 'none') {
+        pageContainer.style.display = 'flex';
+        // Forzar reflow para animación suave de retorno
+        pageContainer.offsetHeight;
+        pageContainer.classList.remove('fade-out');
+      }
     });
   }
 }
 
-// Inicializar audio
+// Inicializar audio y eventos de navegación
 initBackgroundAudio();
 
 

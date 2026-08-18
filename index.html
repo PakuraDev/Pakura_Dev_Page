@@ -7,9 +7,27 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Pantalla principal temporal (blanca con botón 'Ver el mar') -->
-  <div id="welcomeScreen" class="welcome-screen">
-    <button id="btnVerMar" class="btn-ver-mar">Ver el mar</button>
+  <!-- Contenedor de la página principal -->
+  <div id="pageContainer" class="page-container">
+    <header class="app-header">
+      <a href="https://github.com/PakuraDev" target="_blank" rel="noopener noreferrer" class="header-btn" aria-label="GitHub" title="GitHub">
+        <img src="assets/icons/github.svg" alt="GitHub" width="22" height="22" />
+      </a>
+
+      <p class="status-phrase">
+        <span class="phrase-desktop">No lo quería decir, pero joder, que calor hace en sevilla</span>
+        <span class="phrase-mobile">Hace calor</span>
+      </p>
+
+      <button id="btnVerMar" class="header-btn" aria-label="Ver el mar" title="Ver el mar">
+        <img src="assets/icons/wave.svg" alt="Ver el mar" width="22" height="22" />
+      </button>
+    </header>
+
+    <!-- Contenedor central (Bento / Linktree placeholder) -->
+    <main class="bento-container">
+      <!-- Contenido en construcción -->
+    </main>
   </div>
 
   <canvas id="glCanvas"></canvas>
