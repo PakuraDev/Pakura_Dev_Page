@@ -7,38 +7,45 @@
 
   // --- CONFIGURACIÓN & LÍMITES ---
   const MAX_CATEGORIES = 4;
-  const MAX_LINKS_PER_CAT = 4;
+  const MAX_COLUMNS_PER_CAT = 4;
+  const MAX_LINKS_PER_COL = 4;
   const DEFAULT_SEARCH_URL = 'https://duckduckgo.com/?q=';
 
-  // --- DATOS INICIALES PREDETERMINADOS ---
-  const DEFAULT_CATEGORIES = [
-    { id: 'cat-1', name: 'Categoría 1' },
-    { id: 'cat-2', name: 'Categoría 2' },
-    { id: 'cat-3', name: 'Categoría 3' },
-    { id: 'cat-4', name: 'Categoría 4' }
-  ];
+  // --- DATOS INICIALES PREDETERMINADOS (4 Categorías × 4 Columnas × 4 Enlaces) ---
+  function createDefaultColumns(prefix) {
+    return [
+      [
+        { id: `${prefix}-l1`, name: 'Enlace 1', url: 'https://github.com' },
+        { id: `${prefix}-l2`, name: 'Enlace 2', url: 'https://youtube.com' },
+        { id: `${prefix}-l3`, name: 'Enlace 3', url: 'https://reddit.com' },
+        { id: `${prefix}-l4`, name: 'Enlace 4', url: 'https://twitter.com' }
+      ],
+      [
+        { id: `${prefix}-l5`, name: 'Enlace 5', url: 'https://wikipedia.org' },
+        { id: `${prefix}-l6`, name: 'Enlace 6', url: 'https://duckduckgo.com' },
+        { id: `${prefix}-l7`, name: 'Enlace 7', url: 'https://figma.com' },
+        { id: `${prefix}-l8`, name: 'Enlace 8', url: 'https://notion.so' }
+      ],
+      [
+        { id: `${prefix}-l9`, name: 'Enlace 9', url: 'https://spotify.com' },
+        { id: `${prefix}-l10`, name: 'Enlace 10', url: 'https://twitch.tv' },
+        { id: `${prefix}-l11`, name: 'Enlace 11', url: 'https://stackoverflow.com' },
+        { id: `${prefix}-l12`, name: 'Enlace 12', url: 'https://developer.mozilla.org' }
+      ],
+      [
+        { id: `${prefix}-l13`, name: 'Enlace 13', url: 'https://dribbble.com' },
+        { id: `${prefix}-l14`, name: 'Enlace 14', url: 'https://behance.net' },
+        { id: `${prefix}-l15`, name: 'Enlace 15', url: 'https://news.ycombinator.com' },
+        { id: `${prefix}-l16`, name: 'Enlace 16', url: 'https://pakura.dev' }
+      ]
+    ];
+  }
 
-  const DEFAULT_LINKS = [
-    // Categoría 1
-    { id: 'link-1', categoryId: 'cat-1', name: 'Enlace 1', url: 'https://github.com' },
-    { id: 'link-2', categoryId: 'cat-1', name: 'Enlace 2', url: 'https://youtube.com' },
-    { id: 'link-3', categoryId: 'cat-1', name: 'Enlace 3', url: 'https://reddit.com' },
-    { id: 'link-4', categoryId: 'cat-1', name: 'Enlace 4', url: 'https://twitter.com' },
-    // Categoría 2
-    { id: 'link-5', categoryId: 'cat-2', name: 'Enlace 5', url: 'https://wikipedia.org' },
-    { id: 'link-6', categoryId: 'cat-2', name: 'Enlace 6', url: 'https://duckduckgo.com' },
-    { id: 'link-7', categoryId: 'cat-2', name: 'Enlace 7', url: 'https://figma.com' },
-    { id: 'link-8', categoryId: 'cat-2', name: 'Enlace 8', url: 'https://notion.so' },
-    // Categoría 3
-    { id: 'link-9', categoryId: 'cat-3', name: 'Enlace 9', url: 'https://spotify.com' },
-    { id: 'link-10', categoryId: 'cat-3', name: 'Enlace 10', url: 'https://twitch.tv' },
-    { id: 'link-11', categoryId: 'cat-3', name: 'Enlace 11', url: 'https://stackoverflow.com' },
-    { id: 'link-12', categoryId: 'cat-3', name: 'Enlace 12', url: 'https://developer.mozilla.org' },
-    // Categoría 4
-    { id: 'link-13', categoryId: 'cat-4', name: 'Enlace 13', url: 'https://dribbble.com' },
-    { id: 'link-14', categoryId: 'cat-4', name: 'Enlace 14', url: 'https://behance.net' },
-    { id: 'link-15', categoryId: 'cat-4', name: 'Enlace 15', url: 'https://news.ycombinator.com' },
-    { id: 'link-16', categoryId: 'cat-4', name: 'Enlace 16', url: 'https://pakuradev.github.io/Pakura_Dev_Page/' }
+  const DEFAULT_CATEGORIES = [
+    { id: 'cat-1', name: 'Categoría 1', columns: createDefaultColumns('c1') },
+    { id: 'cat-2', name: 'Categoría 2', columns: createDefaultColumns('c2') },
+    { id: 'cat-3', name: 'Categoría 3', columns: createDefaultColumns('c3') },
+    { id: 'cat-4', name: 'Categoría 4', columns: createDefaultColumns('c4') }
   ];
 
   const DEFAULT_NOTES = {
@@ -50,14 +57,46 @@
     '6': { title: 'Nota 6', content: '' }
   };
 
+  // --- PERSISTENCIA LOCALSTORAGE & MIGRACIÓN ---
+  function loadCategories() {
+    try {
+      const stored = localStorage.getItem('kroma_categories_v2');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0 && Array.isArray(parsed[0].columns)) {
+          return parsed;
+        }
+      }
+    } catch (_) {}
+    return JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
+  }
+
+  function saveCategories(cats) {
+    try {
+      localStorage.setItem('kroma_categories_v2', JSON.stringify(cats));
+    } catch (_) {}
+  }
+
+  function loadNotes() {
+    try {
+      const stored = localStorage.getItem('kroma_notes');
+      if (stored) return JSON.parse(stored);
+    } catch (_) {}
+    return JSON.parse(JSON.stringify(DEFAULT_NOTES));
+  }
+
+  function saveNotes(nts) {
+    try {
+      localStorage.setItem('kroma_notes', JSON.stringify(nts));
+    } catch (_) {}
+  }
+
   // --- ESTADO GLOBAL ---
-  let categories = loadData('kroma_categories', DEFAULT_CATEGORIES);
-  let links = loadData('kroma_links', DEFAULT_LINKS);
-  let notes = loadData('kroma_notes', DEFAULT_NOTES);
+  let categories = loadCategories();
+  let notes = loadNotes();
   let activeCategoryId = categories[0] ? categories[0].id : null;
   let activeNoteKey = null;
   let saveNoteTimeout = null;
-  let contextTarget = null; // { type: 'category'|'link', id: string, categoryId?: string }
 
   // --- REFERENCIAS DEL DOM ---
   const searchInput = document.getElementById('searchInput');
@@ -104,21 +143,6 @@
   const modalInputUrl = document.getElementById('modalInputUrl');
   const btnModalCancel = document.getElementById('btnModalCancel');
   const btnModalConfirm = document.getElementById('btnModalConfirm');
-
-  // --- PERSISTENCIA LOCALSTORAGE ---
-  function loadData(key, fallback) {
-    try {
-      const stored = localStorage.getItem(key);
-      if (stored) return JSON.parse(stored);
-    } catch (_) {}
-    return JSON.parse(JSON.stringify(fallback));
-  }
-
-  function saveData(key, val) {
-    try {
-      localStorage.setItem(key, JSON.stringify(val));
-    } catch (_) {}
-  }
 
   // =========================================
   // 1. BUSCADOR INTELIGENTE Y COMANDOS CLI
@@ -241,8 +265,15 @@
       activeCategoryId = categories[0].id;
     }
 
+    // Asegurar que activeCategoryId apunte a una categoría existente
+    let activeCat = categories.find((c) => c.id === activeCategoryId);
+    if (!activeCat && categories.length > 0) {
+      activeCat = categories[0];
+      activeCategoryId = activeCat.id;
+    }
+
+    // 1. Renderizar Pestañas de Categoría superiores
     categories.forEach((cat) => {
-      // 1. Pestaña de Categoría
       const tab = document.createElement('div');
       tab.className = `category-tab ${cat.id === activeCategoryId ? 'active' : ''}`;
       tab.dataset.catId = cat.id;
@@ -257,6 +288,7 @@
       tab.appendChild(title);
       tab.appendChild(bar);
 
+      // Clic para cambiar de categoría
       tab.addEventListener('click', () => {
         activeCategoryId = cat.id;
         renderGrid();
@@ -265,92 +297,126 @@
       // Clic derecho en Categoría
       tab.addEventListener('contextmenu', (e) => {
         e.preventDefault();
-        openContextMenu(e, 'category', cat.id);
+        openCategoryContextMenu(e, cat);
       });
 
       categoriesHeader.appendChild(tab);
+    });
 
-      // 2. Columna de Enlaces
-      const column = document.createElement('div');
-      column.className = 'links-column';
-      column.dataset.catId = cat.id;
+    // 2. Renderizar Columnas / Filas de enlaces de la categoría ACTIVA
+    if (activeCat && Array.isArray(activeCat.columns)) {
+      activeCat.columns.forEach((columnLinks, colIndex) => {
+        const column = document.createElement('div');
+        column.className = 'links-column';
+        column.dataset.colIndex = colIndex;
 
-      const catLinks = links.filter((l) => l.categoryId === cat.id);
+        columnLinks.forEach((link, linkIndex) => {
+          const linkEl = document.createElement('a');
+          linkEl.className = 'link-item';
+          linkEl.textContent = link.name;
+          linkEl.href = link.url;
+          linkEl.target = '_self';
+          linkEl.dataset.linkId = link.id;
 
-      catLinks.forEach((link) => {
-        const linkEl = document.createElement('a');
-        linkEl.className = 'link-item';
-        linkEl.textContent = link.name;
-        linkEl.href = link.url;
-        linkEl.target = '_self';
-        linkEl.dataset.linkId = link.id;
+          // Clic derecho en Enlace
+          linkEl.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            openLinkContextMenu(e, activeCat, colIndex, linkIndex);
+          });
 
-        // Clic derecho en Enlace
-        linkEl.addEventListener('contextmenu', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          openContextMenu(e, 'link', link.id, cat.id);
+          column.appendChild(linkEl);
         });
 
-        column.appendChild(linkEl);
-      });
+        // Si la columna está vacía, permitir clic derecho para añadir
+        column.addEventListener('contextmenu', (e) => {
+          if (e.target === column) {
+            e.preventDefault();
+            openColumnContextMenu(e, activeCat, colIndex);
+          }
+        });
 
-      linksGrid.appendChild(column);
-    });
+        linksGrid.appendChild(column);
+      });
+    }
   }
 
   // =========================================
-  // 3. MENÚ CONTEXTUAL Y ACCIONES
+  // 3. MENÚ CONTEXTUAL SIN EMOJIS
   // =========================================
 
-  function openContextMenu(e, type, id, categoryId) {
-    contextTarget = { type, id, categoryId };
+  function openCategoryContextMenu(e, cat) {
     contextMenu.innerHTML = '';
 
-    if (type === 'category') {
-      const cat = categories.find((c) => c.id === id);
-      if (!cat) return;
+    // Renombrar
+    addContextMenuItem('Cambiar nombre', () => openRenameCategoryModal(cat));
 
-      // Renombrar
-      addContextMenuItem('Cambiar nombre', () => openRenameCategoryModal(cat));
-
-      // Crear nueva categoría (si hay menos del máximo)
-      if (categories.length < MAX_CATEGORIES) {
-        addContextMenuItem('Crear nueva categoría', () => openCreateCategoryModal());
-      }
-
-      // Borrar categoría
-      addContextMenuItem('Borrar categoría', () => openDeleteCategoryModal(cat), true);
-
-      // Restablecer
-      addContextMenuItem('Restablecer todo', () => openResetAllModal());
-    } else if (type === 'link') {
-      const link = links.find((l) => l.id === id);
-      if (!link) return;
-
-      const catLinks = links.filter((l) => l.categoryId === categoryId);
-
-      // Editar
-      addContextMenuItem('Editar enlace', () => openEditLinkModal(link));
-
-      // Añadir enlace en la columna
-      if (catLinks.length < MAX_LINKS_PER_CAT) {
-        addContextMenuItem('Añadir enlace', () => openCreateLinkModal(categoryId));
-      }
-
-      // Borrar enlace / Borrar fila
-      const isLastInCol = catLinks.length === 1;
-      const deleteLabel = isLastInCol ? 'Borrar fila' : 'Borrar enlace';
-      addContextMenuItem(deleteLabel, () => deleteLink(link.id), true);
-
-      // Restablecer
-      addContextMenuItem('Restablecer enlaces', () => openResetLinksModal());
+    // Crear nueva categoría (si hay menos de 4)
+    if (categories.length < MAX_CATEGORIES) {
+      addContextMenuItem('Crear nueva categoría', () => openCreateCategoryModal());
     }
 
-    // Posicionamiento inteligente del menú
+    // Borrar categoría
+    addContextMenuItem('Borrar categoría', () => openDeleteCategoryModal(cat), true);
+
+    // Restablecer todo
+    addContextMenuItem('Restablecer todo', () => openResetAllModal());
+
+    showContextMenu(e);
+  }
+
+  function openLinkContextMenu(e, cat, colIndex, linkIndex) {
+    contextMenu.innerHTML = '';
+
+    const column = cat.columns[colIndex];
+    const link = column[linkIndex];
+    if (!link) return;
+
+    // Editar enlace
+    addContextMenuItem('Editar enlace', () => openEditLinkModal(cat, colIndex, linkIndex));
+
+    // Añadir enlace en esta columna (si hay < 4)
+    if (column.length < MAX_LINKS_PER_COL) {
+      addContextMenuItem('Añadir enlace', () => openCreateLinkModal(cat, colIndex));
+    }
+
+    // Crear nueva fila/columna (si la categoría tiene < 4 columnas)
+    if (cat.columns.length < MAX_COLUMNS_PER_CAT) {
+      addContextMenuItem('Crear fila', () => createColumn(cat));
+    }
+
+    // Borrar enlace / Borrar fila
+    if (column.length === 1) {
+      addContextMenuItem('Borrar fila', () => deleteColumn(cat, colIndex), true);
+    } else {
+      addContextMenuItem('Borrar enlace', () => deleteLink(cat, colIndex, linkIndex), true);
+    }
+
+    // Restablecer enlaces de esta categoría
+    addContextMenuItem('Restablecer enlaces', () => openResetCategoryLinksModal(cat));
+
+    showContextMenu(e);
+  }
+
+  function openColumnContextMenu(e, cat, colIndex) {
+    contextMenu.innerHTML = '';
+    const column = cat.columns[colIndex];
+
+    if (column.length < MAX_LINKS_PER_COL) {
+      addContextMenuItem('Añadir enlace', () => openCreateLinkModal(cat, colIndex));
+    }
+    if (cat.columns.length < MAX_COLUMNS_PER_CAT) {
+      addContextMenuItem('Crear fila', () => createColumn(cat));
+    }
+    addContextMenuItem('Borrar fila', () => deleteColumn(cat, colIndex), true);
+
+    showContextMenu(e);
+  }
+
+  function showContextMenu(e) {
     contextMenu.classList.add('show');
     const x = Math.min(e.clientX, window.innerWidth - 200);
-    const y = Math.min(e.clientY, window.innerHeight - 200);
+    const y = Math.min(e.clientY, window.innerHeight - 220);
     contextMenu.style.left = `${x}px`;
     contextMenu.style.top = `${y}px`;
   }
@@ -430,7 +496,7 @@
       onConfirm: ({ name }) => {
         if (name) {
           cat.name = name;
-          saveData('kroma_categories', categories);
+          saveCategories(categories);
           renderGrid();
         }
       }
@@ -446,16 +512,12 @@
       onConfirm: ({ name }) => {
         if (name && categories.length < MAX_CATEGORIES) {
           const newId = `cat-${Date.now()}`;
-          categories.push({ id: newId, name });
-          // Añadir al menos un enlace por defecto
-          links.push({
-            id: `link-${Date.now()}`,
-            categoryId: newId,
-            name: 'Nuevo Enlace',
-            url: 'https://duckduckgo.com'
+          categories.push({
+            id: newId,
+            name,
+            columns: createDefaultColumns(`c${categories.length + 1}`)
           });
-          saveData('kroma_categories', categories);
-          saveData('kroma_links', links);
+          saveCategories(categories);
           activeCategoryId = newId;
           renderGrid();
         }
@@ -466,23 +528,22 @@
   function openDeleteCategoryModal(cat) {
     showModal({
       title: '¿Borrar categoría?',
-      desc: `Se eliminará "${cat.name}" y todos sus enlaces asociados. Esta acción no se puede deshacer.`,
+      desc: `Se eliminará "${cat.name}" y todas sus filas de enlaces asociadas.`,
       isDanger: true,
       onConfirm: () => {
         categories = categories.filter((c) => c.id !== cat.id);
-        links = links.filter((l) => l.categoryId !== cat.id);
         if (activeCategoryId === cat.id) {
           activeCategoryId = categories[0] ? categories[0].id : null;
         }
-        saveData('kroma_categories', categories);
-        saveData('kroma_links', links);
+        saveCategories(categories);
         renderGrid();
       }
     });
   }
 
-  // Acciones de Enlaces
-  function openEditLinkModal(link) {
+  // Acciones de Enlaces y Columnas
+  function openEditLinkModal(cat, colIndex, linkIndex) {
+    const link = cat.columns[colIndex][linkIndex];
     showModal({
       title: 'Editar enlace',
       desc: 'Modifica el nombre y la dirección de destino:',
@@ -495,13 +556,13 @@
         if (url) {
           link.url = url.startsWith('http') ? url : `https://${url}`;
         }
-        saveData('kroma_links', links);
+        saveCategories(categories);
         renderGrid();
       }
     });
   }
 
-  function openCreateLinkModal(categoryId) {
+  function openCreateLinkModal(cat, colIndex) {
     showModal({
       title: 'Añadir enlace',
       desc: 'Introduce el nombre y la URL del nuevo enlace:',
@@ -511,23 +572,55 @@
       urlVal: 'https://',
       onConfirm: ({ name, url }) => {
         if (name && url) {
-          links.push({
+          cat.columns[colIndex].push({
             id: `link-${Date.now()}`,
-            categoryId,
             name,
             url: url.startsWith('http') ? url : `https://${url}`
           });
-          saveData('kroma_links', links);
+          saveCategories(categories);
           renderGrid();
         }
       }
     });
   }
 
-  function deleteLink(linkId) {
-    links = links.filter((l) => l.id !== linkId);
-    saveData('kroma_links', links);
+  function deleteLink(cat, colIndex, linkIndex) {
+    cat.columns[colIndex].splice(linkIndex, 1);
+    saveCategories(categories);
     renderGrid();
+  }
+
+  function createColumn(cat) {
+    if (cat.columns.length < MAX_COLUMNS_PER_CAT) {
+      cat.columns.push([
+        {
+          id: `link-${Date.now()}`,
+          name: 'Nuevo Enlace',
+          url: 'https://duckduckgo.com'
+        }
+      ]);
+      saveCategories(categories);
+      renderGrid();
+    }
+  }
+
+  function deleteColumn(cat, colIndex) {
+    cat.columns.splice(colIndex, 1);
+    saveCategories(categories);
+    renderGrid();
+  }
+
+  function openResetCategoryLinksModal(cat) {
+    showModal({
+      title: '¿Restablecer enlaces de esta categoría?',
+      desc: `Se restablecerán las 4 filas de enlaces de "${cat.name}".`,
+      isDanger: true,
+      onConfirm: () => {
+        cat.columns = createDefaultColumns(cat.id);
+        saveCategories(categories);
+        renderGrid();
+      }
+    });
   }
 
   function openResetAllModal() {
@@ -537,23 +630,8 @@
       isDanger: true,
       onConfirm: () => {
         categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
-        links = JSON.parse(JSON.stringify(DEFAULT_LINKS));
         activeCategoryId = categories[0].id;
-        saveData('kroma_categories', categories);
-        saveData('kroma_links', links);
-        renderGrid();
-      }
-    });
-  }
-
-  function openResetLinksModal() {
-    showModal({
-      title: '¿Restablecer enlaces?',
-      desc: 'Se restaurarán los enlaces por defecto.',
-      isDanger: true,
-      onConfirm: () => {
-        links = JSON.parse(JSON.stringify(DEFAULT_LINKS));
-        saveData('kroma_links', links);
+        saveCategories(categories);
         renderGrid();
       }
     });
@@ -647,7 +725,7 @@
     saveNoteTimeout = setTimeout(() => {
       if (notes[activeNoteKey]) {
         notes[activeNoteKey].content = noteContent.value;
-        saveData('kroma_notes', notes);
+        saveNotes(notes);
         saveStatus.textContent = 'Guardado automáticamente';
       }
     }, 1000);
@@ -671,7 +749,7 @@
     noteTitleInput.style.display = 'none';
     if (notes[activeNoteKey]) {
       notes[activeNoteKey].title = newTitle;
-      saveData('kroma_notes', notes);
+      saveNotes(notes);
     }
   }
 
@@ -897,7 +975,6 @@
   function exportBackup() {
     const data = {
       categories,
-      links,
       notes,
       exportedAt: new Date().toISOString()
     };
@@ -929,21 +1006,17 @@
 
         if (data.categories && Array.isArray(data.categories)) {
           categories = data.categories;
-          saveData('kroma_categories', categories);
-        }
-        if (data.links && Array.isArray(data.links)) {
-          links = data.links;
-          saveData('kroma_links', links);
+          saveCategories(categories);
         }
         if (data.notes && typeof data.notes === 'object') {
           notes = data.notes;
-          saveData('kroma_notes', notes);
+          saveNotes(notes);
         }
 
         renderGrid();
-        alert('✅ Configuración importada con éxito.');
+        alert('Configuración importada con éxito.');
       } catch (err) {
-        alert('❌ Error al importar archivo JSON: ' + err.message);
+        alert('Error al importar archivo JSON: ' + err.message);
       }
     });
 
