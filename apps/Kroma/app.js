@@ -80,7 +80,7 @@
   const clockPanel = document.getElementById('clockPanel');
   const btnCloseClock = document.getElementById('btnCloseClock');
   const stopwatchDisplay = document.getElementById('stopwatchDisplay');
-  const stopwatchHand = document.getElementById('stopwatchHand');
+  const stopwatchProgressRing = document.getElementById('stopwatchProgressRing');
   const btnStopwatchStart = document.getElementById('btnStopwatchStart');
   const btnStopwatchReset = document.getElementById('btnStopwatchReset');
   const stopwatchWakeIndicator = document.getElementById('stopwatchWakeIndicator');
@@ -312,18 +312,18 @@
       if (!cat) return;
 
       // Renombrar
-      addContextMenuItem('✏️ Cambiar nombre', () => openRenameCategoryModal(cat));
+      addContextMenuItem('Cambiar nombre', () => openRenameCategoryModal(cat));
 
       // Crear nueva categoría (si hay menos del máximo)
       if (categories.length < MAX_CATEGORIES) {
-        addContextMenuItem('➕ Crear nueva categoría', () => openCreateCategoryModal());
+        addContextMenuItem('Crear nueva categoría', () => openCreateCategoryModal());
       }
 
       // Borrar categoría
-      addContextMenuItem('🗑️ Borrar categoría', () => openDeleteCategoryModal(cat), true);
+      addContextMenuItem('Borrar categoría', () => openDeleteCategoryModal(cat), true);
 
       // Restablecer
-      addContextMenuItem('🔄 Restablecer todo', () => openResetAllModal());
+      addContextMenuItem('Restablecer todo', () => openResetAllModal());
     } else if (type === 'link') {
       const link = links.find((l) => l.id === id);
       if (!link) return;
@@ -331,20 +331,20 @@
       const catLinks = links.filter((l) => l.categoryId === categoryId);
 
       // Editar
-      addContextMenuItem('✏️ Editar enlace', () => openEditLinkModal(link));
+      addContextMenuItem('Editar enlace', () => openEditLinkModal(link));
 
       // Añadir enlace en la columna
       if (catLinks.length < MAX_LINKS_PER_CAT) {
-        addContextMenuItem('➕ Añadir enlace', () => openCreateLinkModal(categoryId));
+        addContextMenuItem('Añadir enlace', () => openCreateLinkModal(categoryId));
       }
 
       // Borrar enlace / Borrar fila
       const isLastInCol = catLinks.length === 1;
-      const deleteLabel = isLastInCol ? '🗑️ Borrar fila' : '🗑️ Borrar enlace';
+      const deleteLabel = isLastInCol ? 'Borrar fila' : 'Borrar enlace';
       addContextMenuItem(deleteLabel, () => deleteLink(link.id), true);
 
       // Restablecer
-      addContextMenuItem('🔄 Restablecer enlaces', () => openResetLinksModal());
+      addContextMenuItem('Restablecer enlaces', () => openResetLinksModal());
     }
 
     // Posicionamiento inteligente del menú
@@ -564,7 +564,7 @@
   // =========================================
 
   const HELP_GUIDE_HTML = `
-    <h6>⌨️ Comandos del Buscador</h6>
+    <h6>Comandos del Buscador</h6>
     <ul>
       <li><code>25 * 4 + 10</code> → Calculadora matemática instantánea</li>
       <li><code>/yt [término]</code> → Buscar en YouTube</li>
@@ -577,13 +577,13 @@
       <li><code>/bento</code> → Volver a la página principal del Bento</li>
     </ul>
 
-    <h6>🖱️ Controles con Clic Derecho</h6>
+    <h6>Controles con Clic Derecho</h6>
     <ul>
       <li><strong>Sobre una Categoría:</strong> Cambiar nombre, crear nueva, borrar y restablecer.</li>
       <li><strong>Sobre un Enlace:</strong> Editar nombre/URL, añadir nuevo, borrar y restablecer.</li>
     </ul>
 
-    <h6>⏱️ Cronómetro y Temporizador</h6>
+    <h6>Cronómetro y Temporizador</h6>
     <ul>
       <li>Usa el botón de reloj en la esquina inferior derecha.</li>
       <li>Mantiene la pantalla encendida automáticamente mientras esté activo (Screen Wake Lock API).</li>
@@ -739,6 +739,7 @@
   }
 
   // --- CRONÓMETRO ---
+  const RING_CIRCUMFERENCE = 440; // 2 * PI * 70 approx
   let isStopwatchRunning = false;
   let stopwatchStartTime = 0;
   let stopwatchElapsedTime = 0;
@@ -758,9 +759,12 @@
 
     stopwatchDisplay.textContent = `${minsStr}:${secsStr}.${msStr}`;
 
-    // Rotación de la manecilla (1 vuelta cada 60s)
-    const deg = ((totalMs / 1000) % 60) * 6;
-    stopwatchHand.style.transform = `rotate(${deg}deg)`;
+    // Progreso continuo del anillo (1 vuelta completa cada 60s)
+    const fraction = ((totalMs % 60000) / 60000);
+    const offset = RING_CIRCUMFERENCE * (1 - fraction);
+    if (stopwatchProgressRing) {
+      stopwatchProgressRing.style.strokeDashoffset = offset;
+    }
 
     if (isStopwatchRunning) {
       stopwatchRafId = requestAnimationFrame(updateStopwatch);
@@ -790,7 +794,9 @@
     cancelAnimationFrame(stopwatchRafId);
     stopwatchElapsedTime = 0;
     stopwatchDisplay.textContent = '00:00.00';
-    stopwatchHand.style.transform = 'rotate(0deg)';
+    if (stopwatchProgressRing) {
+      stopwatchProgressRing.style.strokeDashoffset = RING_CIRCUMFERENCE;
+    }
     btnStopwatchStart.textContent = 'Iniciar';
     releaseWakeLockIfIdle();
   });
@@ -800,7 +806,6 @@
   let timerRemainingSecs = timerDurationSecs;
   let isTimerRunning = false;
   let timerIntervalId = null;
-  const RING_CIRCUMFERENCE = 440; // 2 * PI * 70 approx
 
   function updateTimerDisplay() {
     const mins = Math.floor(timerRemainingSecs / 60);
