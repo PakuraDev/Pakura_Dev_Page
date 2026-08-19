@@ -2,20 +2,110 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mesh - Pakura</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Mesh Gradient - Pakura</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="app-container">
-    <header class="app-header">
-      <a href="../../index.html" class="back-btn">← Volver al Bento</a>
-      <h1>Mesh</h1>
-    </header>
-    <main class="app-content">
-      <!-- Contenido de Mesh -->
+  <div class="page-container">
+    <!-- Panel de Controles Lateral -->
+    <aside class="sidebar-panel">
+      <!-- Header de controles -->
+      <header class="controls-header">
+        <a href="../../index.html" class="header-btn" aria-label="Volver al Bento" title="Volver al Bento">
+          <img src="../../assets/icons/chevron-left.svg" alt="Volver" width="22" height="22" />
+        </a>
+        <button id="btnDownload" class="header-btn" aria-label="Descargar PNG" title="Descargar PNG">
+          <img src="../../assets/icons/download.svg" alt="Descargar" width="22" height="22" />
+        </button>
+      </header>
+
+      <div class="controls-content">
+        <!-- Semilla -->
+        <div class="control-section">
+          <label class="control-label" for="inputSeed">Semilla</label>
+          <div class="input-card seed-card">
+            <input type="text" id="inputSeed" value="00000000" spellcheck="false" autocomplete="off" />
+            <button id="btnRandomSeed" class="icon-btn" aria-label="Semilla aleatoria" title="Semilla aleatoria">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect>
+                <circle cx="8.5" cy="8.5" r="1.2" fill="currentColor"></circle>
+                <circle cx="12" cy="12" r="1.2" fill="currentColor"></circle>
+                <circle cx="15.5" cy="15.5" r="1.2" fill="currentColor"></circle>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Colores -->
+        <div class="control-section">
+          <label class="control-label">Colores</label>
+          <div class="colors-list" id="colorsList"></div>
+
+          <!-- Fila para añadir color -->
+          <div class="input-card add-color-card" id="addColorCard">
+            <div class="color-dot-wrapper">
+              <span class="color-dot" id="newColorPreview" style="background-color: #ffffff;"></span>
+              <input type="color" id="newColorPicker" class="native-color-picker" value="#ffffff" />
+            </div>
+            <input type="text" id="inputNewColor" class="color-hex-input" placeholder="#" maxlength="7" spellcheck="false" />
+            <div class="card-actions">
+              <button id="btnRandomNewColor" class="icon-btn" aria-label="Color aleatorio" title="Color aleatorio">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.2" fill="currentColor"></circle>
+                  <circle cx="12" cy="12" r="1.2" fill="currentColor"></circle>
+                  <circle cx="15.5" cy="15.5" r="1.2" fill="currentColor"></circle>
+                </svg>
+              </button>
+              <button id="btnAddColor" class="icon-btn" aria-label="Añadir color" title="Añadir color">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sliders -->
+        <div class="control-section slider-section">
+          <div class="slider-header">
+            <label class="control-label" for="sliderComplexity">Complejidad: <span id="valComplexity">6</span></label>
+          </div>
+          <input type="range" id="sliderComplexity" class="custom-range" min="3" max="15" value="6" />
+        </div>
+
+        <div class="control-section slider-section">
+          <div class="slider-header">
+            <label class="control-label" for="sliderBlur">Desenfoque: <span id="valBlur">120</span> px</label>
+          </div>
+          <input type="range" id="sliderBlur" class="custom-range" min="0" max="250" value="120" />
+        </div>
+
+        <div class="control-section slider-section">
+          <div class="slider-header">
+            <label class="control-label" for="sliderNoise">Ruido: <span id="valNoise">15</span>%</label>
+          </div>
+          <input type="range" id="sliderNoise" class="custom-range" min="0" max="50" value="15" />
+        </div>
+
+        <!-- Historial (Desktop >= 600px) -->
+        <div class="control-section history-section" id="historySection">
+          <label class="control-label">Historial</label>
+          <div class="history-grid" id="historyGrid"></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Contenedor Bento Central (Mesh Canvas) -->
+    <main class="bento-container" id="meshContainer">
+      <div class="mesh-canvas-wrapper">
+        <canvas id="meshCanvas" width="600" height="600"></canvas>
+      </div>
     </main>
   </div>
+
   <script src="app.js"></script>
 </body>
 </html>

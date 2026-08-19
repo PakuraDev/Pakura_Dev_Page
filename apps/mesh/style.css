@@ -1,26 +1,499 @@
+/* Fuentes locales Plus Jakarta Sans */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../../assets/fonts/PlusJakartaSans-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('../../assets/fonts/PlusJakartaSans-500.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('../../assets/fonts/PlusJakartaSans-600.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../../assets/fonts/PlusJakartaSans-700.woff2') format('woff2');
+}
+
+:root {
+  --negro-800: #1a1a1a;
+  --negro-700: #262626;
+  --negro-600: #333333;
+  --blanco-50: #ffffff;
+  --blanco-100: #f0f0f0;
+  --gris-add: #484848;
+  --gris-add-hover: #555555;
+  --gris-history: #d8d8d8;
+  --aqua-500: #00e5ff;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background-color: #f8fafc;
-  color: #1e293b;
-  min-height: 100vh;
-  padding: 2rem;
+
+html, body {
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--blanco-50);
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: var(--negro-800);
 }
-.app-header {
+
+/* Contenedor principal de la página */
+.page-container {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  background: var(--blanco-50);
+  padding: 16px;
+  padding-top: max(16px, env(safe-area-inset-top));
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  overflow: hidden;
+}
+
+/* Panel Lateral (Sidebar) */
+.sidebar-panel {
+  width: 320px;
+  min-width: 300px;
+  max-width: 340px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+/* Header superior de controles (40px) */
+.controls-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 40px;
+  margin-bottom: 16px;
+  flex-shrink: 0;
+}
+
+/* Botones circulares (Atrás y Descargar) */
+.header-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--negro-800);
+  border: none;
+  outline: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.header-btn:hover:not(:disabled) {
+  background: var(--negro-700);
+  transform: scale(1.06);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.24);
+}
+
+.header-btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.header-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Contenido scrolleable de controles */
+.controls-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.controls-content::-webkit-scrollbar {
+  width: 5px;
+}
+
+.controls-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.controls-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+}
+
+/* Secciones de control */
+.control-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.control-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--negro-800);
+  line-height: 1.2;
+}
+
+/* Tarjetas de Input (Semilla y Colores) */
+.input-card {
+  height: 40px;
+  background: var(--negro-800);
+  border-radius: 10px;
+  padding: 0 12px;
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  gap: 10px;
+  color: var(--blanco-50);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: background-color 0.2s ease, transform 0.15s ease;
 }
-.back-btn {
-  color: #0284c7;
-  text-decoration: none;
+
+.input-card input[type="text"] {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--blanco-50);
+  font-family: 'Plus Jakarta Sans', monospace;
+  font-size: 14px;
   font-weight: 500;
+  letter-spacing: 0.3px;
 }
-.back-btn:hover {
-  text-decoration: underline;
+
+.input-card input[type="text"]::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Botones de icono dentro de tarjetas */
+.icon-btn {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--blanco-50);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 4px;
+  opacity: 0.85;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.icon-btn:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.icon-btn:active {
+  transform: scale(0.92);
+}
+
+.icon-btn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* Lista de Colores */
+.colors-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.color-card {
+  height: 40px;
+}
+
+/* Wrapper del círculo de color */
+.color-dot-wrapper {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.color-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
+  display: block;
+  pointer-events: none;
+  transition: transform 0.15s ease;
+}
+
+.color-dot-wrapper:hover .color-dot {
+  transform: scale(1.15);
+}
+
+.native-color-picker {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+}
+
+/* Tarjeta para añadir nuevo color */
+.add-color-card {
+  background: var(--gris-add);
+  margin-top: 8px;
+}
+
+.add-color-card:hover {
+  background: var(--gris-add-hover);
+}
+
+/* Sliders personalizados */
+.slider-section {
+  gap: 8px;
+}
+
+.slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.custom-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: #1a1a1a;
+  outline: none;
+  border: 1px solid #1a1a1a;
+  cursor: pointer;
+  transition: background 0.1s ease;
+}
+
+.custom-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--blanco-50);
+  border: 1.5px solid var(--negro-800);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: transform 0.12s ease;
+}
+
+.custom-range::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.custom-range::-webkit-slider-thumb:active {
+  transform: scale(0.95);
+}
+
+.custom-range::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--blanco-50);
+  border: 1.5px solid var(--negro-800);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: transform 0.12s ease;
+}
+
+.custom-range::-moz-range-thumb:hover {
+  transform: scale(1.2);
+}
+
+/* Historial (6 slots en 3 columnas) */
+.history-section {
+  margin-top: auto;
+  padding-top: 6px;
+}
+
+.history-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  width: 100%;
+}
+
+.history-slot {
+  aspect-ratio: 1 / 1;
+  background: var(--gris-history);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
+}
+
+.history-slot.has-content {
+  cursor: pointer;
+}
+
+.history-slot.has-content:hover {
+  transform: scale(1.05);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.16);
+}
+
+.history-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Contenedor central Bento */
+.bento-container {
+  flex: 1;
+  height: 100%;
+  background: var(--negro-800);
+  border-radius: 24px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 24px;
+}
+
+.mesh-canvas-wrapper {
+  width: 100%;
+  max-width: 600px;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  overflow: hidden;
+  background: transparent;
+}
+
+#meshCanvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 16px;
+  object-fit: contain;
+}
+
+/* Responsive Móvil (320px - 599px) */
+@media (max-width: 599px) {
+  html, body {
+    overflow-y: auto;
+    height: auto;
+    min-height: 100%;
+  }
+
+  .page-container {
+    position: relative;
+    inset: auto;
+    height: auto;
+    min-height: 100dvh;
+    flex-direction: column;
+    overflow-y: auto;
+    padding: 16px;
+    padding-top: max(16px, env(safe-area-inset-top));
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+    gap: 18px;
+  }
+
+  .sidebar-panel {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .controls-content {
+    overflow: visible;
+    padding-right: 0;
+    gap: 16px;
+  }
+
+  /* Ocultar historial en móvil */
+  .history-section {
+    display: none !important;
+  }
+
+  .bento-container {
+    width: 100%;
+    height: auto;
+    min-height: 320px;
+    aspect-ratio: 1 / 1;
+    flex: none;
+    padding: 16px;
+    margin-bottom: 8px;
+  }
+
+  .mesh-canvas-wrapper {
+    max-width: 100%;
+    width: 100%;
+  }
 }
