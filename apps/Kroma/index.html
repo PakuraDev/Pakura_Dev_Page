@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Kroma - Pakura</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/icons/favicon.svg" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="page-container">
+    
+    <!-- Contenido Principal con Fondo de Lucy -->
+    <main class="main-frame" id="mainFrame">
+      
+      <!-- Buscador Inteligente -->
+      <div class="search-container">
+        <input 
+          type="text" 
+          id="searchInput" 
+          class="search-input" 
+          placeholder="buscar con duck duck go" 
+          autocomplete="off" 
+          spellcheck="false" 
+          autofocus 
+        />
+      </div>
+
+      <!-- Contenedor de Enlaces -->
+      <div class="links-container">
+        
+        <!-- Pestañas / Títulos de Categorías -->
+        <div class="categories-header" id="categoriesHeader">
+          <!-- Generado dinámicamente -->
+        </div>
+
+        <!-- Columnas con Filas de Enlaces -->
+        <div class="links-grid" id="linksGrid">
+          <!-- Generado dinámicamente -->
+        </div>
+
+      </div>
+    </main>
+
+    <!-- Barra Inferior -->
+    <footer class="bottom-bar">
+      
+      <!-- Grupo de Notas (Izquierda) -->
+      <div class="notes-group" id="notesGroup">
+        <button class="note-btn" data-note="1">1</button>
+        <button class="note-btn" data-note="2">2</button>
+        <button class="note-btn" data-note="3">3</button>
+        <button class="note-btn" data-note="4">4</button>
+        <button class="note-btn" data-note="5">5</button>
+        <button class="note-btn" data-note="6">6</button>
+        <button class="note-btn help-btn" data-note="help" aria-label="Ayuda y Comandos" title="Ayuda y Comandos">?</button>
+      </div>
+
+      <!-- Reloj / Cronómetro / Temporizador (Derecha) -->
+      <div class="clock-group">
+        <button class="clock-btn" id="btnClockToggle" aria-label="Cronómetro y Temporizador" title="Cronómetro y Temporizador">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+        </button>
+      </div>
+
+    </footer>
+
+    <!-- Panel Desplegable: Notas (Popout Izquierdo) -->
+    <aside class="popout-panel notes-panel" id="notesPanel">
+      <div class="popout-header">
+        <div class="note-badge" id="noteBadge">1</div>
+        <div class="note-title-wrapper">
+          <h4 class="note-title" id="noteTitle" title="Doble clic para editar título">Nota 1</h4>
+          <input type="text" class="note-title-input" id="noteTitleInput" style="display: none;" maxlength="30" />
+        </div>
+        <button class="popout-close-btn" id="btnCloseNotes" aria-label="Cerrar notas">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="popout-body">
+        <textarea id="noteContent" class="note-textarea" placeholder="Escribe tu nota aquí..." spellcheck="false"></textarea>
+        <div id="helpContent" class="help-content" style="display: none;"></div>
+      </div>
+      <div class="popout-footer">
+        <span class="save-status" id="saveStatus">Guardado automáticamente</span>
+      </div>
+    </aside>
+
+    <!-- Panel Desplegable: Reloj / Cronómetro / Temporizador (Popout Derecho) -->
+    <aside class="popout-panel clock-panel" id="clockPanel">
+      <div class="popout-header">
+        <h4 class="clock-panel-title">Reloj y Tiempo</h4>
+        <button class="popout-close-btn" id="btnCloseClock" aria-label="Cerrar reloj">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="clock-panel-body">
+        <!-- 1. Cronómetro -->
+        <section class="timer-section">
+          <div class="section-title-row">
+            <h5>Cronómetro</h5>
+            <span class="wakelock-indicator" id="stopwatchWakeIndicator" title="Screen Wake Lock activo"></span>
+          </div>
+          
+          <div class="circular-clock-widget">
+            <svg class="clock-svg" viewBox="0 0 160 160">
+              <circle class="clock-track" cx="80" cy="80" r="70"></circle>
+              <line class="clock-hand" id="stopwatchHand" x1="80" y1="80" x2="80" y2="20"></line>
+              <circle class="clock-center-dot" cx="80" cy="80" r="4"></circle>
+            </svg>
+            <div class="clock-digital-display" id="stopwatchDisplay">00:00.00</div>
+          </div>
+
+          <div class="timer-controls">
+            <button class="btn-timer btn-primary" id="btnStopwatchStart">Iniciar</button>
+            <button class="btn-timer btn-secondary" id="btnStopwatchReset">Reiniciar</button>
+          </div>
+        </section>
+
+        <div class="clock-divider"></div>
+
+        <!-- 2. Temporizador -->
+        <section class="timer-section">
+          <div class="section-title-row">
+            <h5>Temporizador</h5>
+            <span class="wakelock-indicator" id="timerWakeIndicator" title="Screen Wake Lock activo"></span>
+          </div>
+
+          <div class="circular-clock-widget">
+            <svg class="clock-svg" viewBox="0 0 160 160">
+              <circle class="clock-track" cx="80" cy="80" r="70"></circle>
+              <circle class="timer-progress" id="timerProgressRing" cx="80" cy="80" r="70"></circle>
+            </svg>
+            <div class="clock-digital-display" id="timerDisplay">25:00</div>
+          </div>
+
+          <!-- Presets rápidos -->
+          <div class="timer-presets">
+            <button class="preset-btn" data-minutes="5">5m</button>
+            <button class="preset-btn" data-minutes="15">15m</button>
+            <button class="preset-btn active" data-minutes="25">25m</button>
+            <button class="preset-btn" data-minutes="45">45m</button>
+            <button class="preset-btn" data-minutes="60">60m</button>
+          </div>
+
+          <div class="timer-controls">
+            <button class="btn-timer btn-primary" id="btnTimerStart">Iniciar</button>
+            <button class="btn-timer btn-secondary" id="btnTimerReset">Reiniciar</button>
+          </div>
+        </section>
+      </div>
+    </aside>
+
+    <!-- Menú Contextual (Clic derecho) -->
+    <div class="context-menu" id="contextMenu">
+      <!-- Opciones inyectadas dinámicamente según objetivo (categoría o enlace) -->
+    </div>
+
+    <!-- Modal de Confirmación / Edición -->
+    <div class="modal-backdrop" id="modalBackdrop">
+      <div class="modal-dialog">
+        <h4 class="modal-title" id="modalTitle">Confirmación</h4>
+        <p class="modal-desc" id="modalDesc">¿Estás seguro de realizar esta acción?</p>
+        
+        <div class="modal-form" id="modalForm" style="display: none;">
+          <div class="form-group">
+            <label for="modalInputName">Nombre</label>
+            <input type="text" id="modalInputName" class="modal-input" placeholder="Nombre..." />
+          </div>
+          <div class="form-group" id="formGroupUrl">
+            <label for="modalInputUrl">URL</label>
+            <input type="text" id="modalInputUrl" class="modal-input" placeholder="https://..." />
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-modal btn-cancel" id="btnModalCancel">Cancelar</button>
+          <button class="btn-modal btn-confirm" id="btnModalConfirm">Confirmar</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
