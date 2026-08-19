@@ -663,19 +663,46 @@ function initBackgroundAudio() {
     }, stepTime);
   }
 
+  function fadeOutAudio(duration = 600) {
+    if (fadeInterval) clearInterval(fadeInterval);
+    const stepTime = 50;
+    const startVolume = bgAudio.volume;
+    const stepVolume = startVolume / (duration / stepTime);
+
+    fadeInterval = setInterval(() => {
+      if (bgAudio.volume - stepVolume <= 0) {
+        bgAudio.volume = 0;
+        bgAudio.pause();
+        isPlaying = false;
+        clearInterval(fadeInterval);
+        fadeInterval = null;
+      } else {
+        bgAudio.volume -= stepVolume;
+      }
+    }, stepTime);
+  }
+
   function startAudio() {
-    if (isPlaying && !bgAudio.paused) return;
-    const playPromise = bgAudio.play();
-    if (playPromise !== undefined) {
-      playPromise
-        .then(() => {
-          isPlaying = true;
-          fadeInAudio();
-        })
-        .catch(() => {
-          isPlaying = false;
-        });
+    if (bgAudio.paused) {
+      const playPromise = bgAudio.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            isPlaying = true;
+            fadeInAudio();
+          })
+          .catch(() => {
+            isPlaying = false;
+          });
+      }
+    } else {
+      isPlaying = true;
+      fadeInAudio();
     }
+  }
+
+  function stopAudio() {
+    fadeOutAudio(600);
   }
 
   if (btnVerMar && pageContainer) {
@@ -695,6 +722,7 @@ function initBackgroundAudio() {
         // Forzar reflow para animación suave de retorno
         pageContainer.offsetHeight;
         pageContainer.classList.remove('fade-out');
+        stopAudio();
       }
     });
   }
