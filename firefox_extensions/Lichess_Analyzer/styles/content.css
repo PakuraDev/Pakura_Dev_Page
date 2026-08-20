@@ -1,0 +1,54 @@
+/* Comments translated with AI */
+
+/* El botoncito */
+/* Main 3D button styling injected into Chess.com interface */
+.lichess-analyzer-btn {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background-color: #363431;
+  color: #ffffff !important;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.2;
+  cursor: pointer;
+  box-shadow: 0 4px 0 0 #21201d;
+  transition: all 0.1s ease-in-out;
+  margin-top: 16px;
+  margin-bottom: 12px;
+  text-decoration: none;
+  user-select: none;
+  position: relative;
+  clear: both;
+}
+
+/* su hover */
+/* Hover state for the button */
+.lichess-analyzer-btn:hover {
+  background-color: #45423e;
+  box-shadow: 0 4px 0 0 #21201d;
+}
+
+/* su active */
+/* Active click compression effect for the button */
+.lichess-analyzer-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 0 #21201d;
+}
+
+/* las medidas del svg */
+/* SVG icon dimensions and alignment */
+.lichess-analyzer-icon {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+}

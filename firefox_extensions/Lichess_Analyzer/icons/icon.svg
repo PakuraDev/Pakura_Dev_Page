@@ -1,0 +1,28 @@
+<!-- Comments translated with AI -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <!-- esp -->
+    <!-- Gradient definitions for background and accent highlights -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#14151b"/>
+      <stop offset="100%" stop-color="#1f232d"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00e5ff"/>
+      <stop offset="100%" stop-color="#81b64c"/>
+    </linearGradient>
+  </defs>
+  <!-- esp -->
+  <!-- Rounded container shape -->
+  <rect x="4" y="4" width="120" height="120" rx="28" fill="url(#bgGrad)" stroke="#333742" stroke-width="4"/>
+  <!-- esp -->
+  <!-- Stylized chess emblem -->
+  <g fill="none" stroke="url(#accentGrad)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 64,28 C 88,30 102,46 100,96 L 42,96 C 42,74 65,80 60,46" fill="#ffffff"/>
+    <path d="M 62,46 C 63,53 50,63 44,67 C 37,72 37,77 32,76 C 29,74 35,69 32,69 C 30,69 32,72 30,74 C 27,74 20,76 20,65 C 20,60 34,36 34,36 C 34,36 38,32 40,28 C 38,26 39,23 39,21 C 41,18 46,26 46,26 L 51,26 C 51,26 53,21 57,19 C 60,19 60,26 60,26" fill="#ffffff"/>
+    <circle cx="43" cy="36" r="3" fill="#14151b"/>
+  </g>
+  <!-- esp -->
+  <!-- Analysis sparkle indicator -->
+  <path d="M 96,24 L 99,32 L 107,35 L 99,38 L 96,46 L 93,38 L 85,35 L 93,32 Z" fill="#00e5ff"/>
+</svg>
