@@ -32,6 +32,7 @@
 }
 
 :root {
+  /* Paleta de colores */
   --negro-800: #1a1a1a;
   --negro-700: #262626;
   --negro-600: #333333;
@@ -42,6 +43,138 @@
   --danger-red: #ef4444;
   --popout-width: clamp(320px, calc((100vw - 896px) / 2 - 48px), 460px);
   --anim-duration: 200ms;
+
+  /* Tipografías */
+  --font-family-base: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-family-code: 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* ==========================================================================
+     DESIGN TOKENS - PC / DESKTOP (Default)
+     ========================================================================== */
+  --type-h1-size: 48px;
+  --type-h1-weight: 700;
+  --type-h1-spacing: -0.5px;
+  --type-h1-line-height: 117%;
+
+  --type-h2-size: 36px;
+  --type-h2-weight: 700;
+  --type-h2-spacing: -0.25px;
+  --type-h2-line-height: 122%;
+
+  --type-h3-size: 28px;
+  --type-h3-weight: 600;
+  --type-h3-spacing: 0px;
+  --type-h3-line-height: 129%;
+
+  --type-h4-size: 22px;
+  --type-h4-weight: 600;
+  --type-h4-spacing: 0px;
+  --type-h4-line-height: 127%;
+
+  --type-p-large-size: 18px;
+  --type-p-large-weight: 400;
+  --type-p-large-spacing: 0.15px;
+  --type-p-large-line-height: 156%;
+
+  --type-p-size: 16px;
+  --type-p-weight: 400;
+  --type-p-spacing: 0.25px;
+  --type-p-line-height: 150%;
+
+  --type-p-small-size: 14px;
+  --type-p-small-weight: 400;
+  --type-p-small-spacing: 0.3px;
+  --type-p-small-line-height: 143%;
+
+  --type-caption-size: 12px;
+  --type-caption-weight: 400;
+  --type-caption-spacing: 0.4px;
+  --type-caption-line-height: 133%;
+
+  --type-button-size: 14px;
+  --type-button-weight: 600;
+  --type-button-spacing: 0.5px;
+  --type-button-line-height: 140%;
+
+  --type-code-inline-size: 14px;
+  --type-code-inline-weight: 400;
+  --type-code-inline-spacing: 0px;
+  --type-code-inline-line-height: 143%;
+
+  --type-code-block-size: 14px;
+  --type-code-block-weight: 400;
+  --type-code-block-spacing: 0px;
+  --type-code-block-line-height: 160%;
+}
+
+/* Tablet Tokens (600px - 959px) */
+@media (max-width: 959px) {
+  :root {
+    --type-h1-size: 40px;
+    --type-h1-line-height: 120%;
+
+    --type-h2-size: 32px;
+    --type-h2-line-height: 125%;
+
+    --type-h3-size: 24px;
+    --type-h3-line-height: 133%;
+
+    --type-h4-size: 20px;
+    --type-h4-line-height: 130%;
+
+    --type-p-large-size: 18px;
+    --type-p-large-line-height: 156%;
+
+    --type-p-size: 16px;
+    --type-p-line-height: 150%;
+
+    --type-p-small-size: 14px;
+    --type-p-small-line-height: 143%;
+
+    --type-caption-size: 12px;
+    --type-caption-line-height: 133%;
+
+    --type-button-size: 14px;
+    --type-button-line-height: 140%;
+
+    --type-code-inline-line-height: 143%;
+    --type-code-block-line-height: 160%;
+  }
+}
+
+/* Mobile Tokens (< 600px) */
+@media (max-width: 599px) {
+  :root {
+    --type-h1-size: 32px;
+    --type-h1-line-height: 125%;
+
+    --type-h2-size: 28px;
+    --type-h2-line-height: 129%;
+
+    --type-h3-size: 22px;
+    --type-h3-line-height: 127%;
+
+    --type-h4-size: 18px;
+    --type-h4-line-height: 133%;
+
+    --type-p-large-size: 16px;
+    --type-p-large-line-height: 150%;
+
+    --type-p-size: 16px;
+    --type-p-line-height: 150%;
+
+    --type-p-small-size: 14px;
+    --type-p-small-line-height: 143%;
+
+    --type-caption-size: 12px;
+    --type-caption-line-height: 133%;
+
+    --type-button-size: 14px;
+    --type-button-line-height: 140%;
+
+    --type-code-inline-line-height: 138%;
+    --type-code-block-line-height: 154%;
+  }
 }
 
 * {
