@@ -152,6 +152,7 @@ html, body {
   position: relative;
   display: flex;
   flex-direction: column;
+  transition: background-color 0.5s ease;
 }
 
 /* Área de scroll interna */
@@ -200,7 +201,86 @@ html, body {
   border-radius: 20px;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              background-color 0.4s ease,
+              border-color 0.4s ease,
+              box-shadow 0.4s ease;
+}
+
+/* Tarjeta oculta en Modo Mar */
+.bento-card.card-hidden {
+  opacity: 0 !important;
+  transform: scale(0.92) !important;
+  pointer-events: none !important;
+}
+
+/* ==========================================================================
+   MODO MAR (Sea Mode)
+   ========================================================================== */
+.page-container.sea-mode {
+  background: transparent;
+}
+
+.page-container.sea-mode .bento-container {
+  background: transparent;
+}
+
+.page-container.sea-mode .bento-card {
+  background: rgba(255, 255, 255, 0.35);
+  border-color: rgba(26, 26, 26, 0.12);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 12px 36px rgba(12, 60, 70, 0.18);
+  cursor: pointer;
+}
+
+.page-container.sea-mode .profile-name {
+  color: var(--negro-800);
+}
+
+.page-container.sea-mode .profile-bio {
+  color: rgba(26, 26, 26, 0.72);
+}
+
+.page-container.sea-mode .details-text {
+  color: rgba(26, 26, 26, 0.68);
+}
+
+.page-container.sea-mode .link-item {
+  background: rgba(255, 255, 255, 0.45);
+  border-color: rgba(26, 26, 26, 0.12);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.page-container.sea-mode .link-item:hover {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: var(--negro-800);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.page-container.sea-mode .link-title {
+  color: var(--negro-800);
+}
+
+.page-container.sea-mode .link-url {
+  color: rgba(26, 26, 26, 0.55);
+}
+
+.page-container.sea-mode .link-icon {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.page-container.sea-mode .link-item:not([title="Figma"]) .link-icon img {
+  filter: invert(1) brightness(0.1);
+}
+
+.page-container.sea-mode .link-arrow {
+  color: rgba(26, 26, 26, 0.4);
+}
+
+.page-container.sea-mode .link-item:hover .link-arrow {
+  color: var(--negro-800);
 }
 
 /* Categoría 1: Tarjeta de Presentación */

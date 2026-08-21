@@ -701,28 +701,57 @@ function initBackgroundAudio() {
     }
   }
 
-  function stopAudio() {
-    fadeOutAudio(600);
+  function enterSeaMode() {
+    pageContainer.classList.add('sea-mode');
+    // Restaurar cualquier tarjeta oculta previamente
+    document.querySelectorAll('.bento-card').forEach(card => {
+      card.classList.remove('card-hidden');
+    });
+    startAudio();
+  }
+
+  function exitSeaMode() {
+    if (!pageContainer.classList.contains('sea-mode')) return;
+    pageContainer.classList.remove('sea-mode');
+    // Restaurar visibilidad de todas las tarjetas para el modo normal
+    document.querySelectorAll('.bento-card').forEach(card => {
+      card.classList.remove('card-hidden');
+    });
+    stopAudio();
   }
 
   if (btnVerMar && pageContainer) {
+    // Al pulsar el botón de ver el mar se conmuta el Modo Mar
     btnVerMar.addEventListener('click', (e) => {
       e.stopPropagation();
-      pageContainer.classList.add('fade-out');
-      setTimeout(() => {
-        pageContainer.style.display = 'none';
-      }, 600);
-      startAudio();
+      if (pageContainer.classList.contains('sea-mode')) {
+        exitSeaMode();
+      } else {
+        enterSeaMode();
+      }
     });
 
-    // Hacer clic en el mar/fondo permite volver a la página principal
-    window.addEventListener('click', () => {
-      if (pageContainer.style.display === 'none') {
-        pageContainer.style.display = 'flex';
-        // Forzar reflow para animación suave de retorno
-        pageContainer.offsetHeight;
-        pageContainer.classList.remove('fade-out');
-        stopAudio();
+    // En Modo Mar: al pulsar una card, esa card desaparece
+    const bentoGrid = document.querySelector('.bento-grid');
+    if (bentoGrid) {
+      bentoGrid.addEventListener('click', (e) => {
+        if (pageContainer.classList.contains('sea-mode')) {
+          const card = e.target.closest('.bento-card');
+          if (card) {
+            e.stopPropagation();
+            e.preventDefault();
+            card.classList.add('card-hidden');
+          }
+        }
+      });
+    }
+
+    // Al hacer clic en cualquier otro lado fuera de las tarjetas, vuelve al modo normal
+    window.addEventListener('click', (e) => {
+      if (pageContainer.classList.contains('sea-mode')) {
+        if (!e.target.closest('.header-btn')) {
+          exitSeaMode();
+        }
       }
     });
   }
@@ -730,6 +759,7 @@ function initBackgroundAudio() {
 
 // Inicializar audio y eventos de navegación
 initBackgroundAudio();
+
 
 
 
