@@ -728,17 +728,25 @@ html, body {
 }
 
 /* ==========================================================================
-   TABLETS Y MÓVILES (< 960px) - Altura auto con scroll fluido
+   TABLETS Y MÓVILES (< 960px) - Altura auto con scroll fluido y padding simétrico
    ========================================================================== */
 @media (max-width: 959px) {
   .content-scroll {
-    padding: 16px 12px;
+    padding: 16px;
     display: block;
     height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     box-sizing: border-box;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .content-scroll::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
   }
 
   .bento-grid {
@@ -750,7 +758,7 @@ html, body {
     margin: 0 auto;
     min-height: min-content;
     gap: 16px;
-    padding-bottom: 8px;
+    padding: 0;
   }
 
   .presentation-card {
@@ -758,9 +766,10 @@ html, body {
     max-width: 480px;
     height: auto;
     min-height: min-content;
-    padding: 22px 16px 8px 16px;
+    padding: 20px;
     border-radius: 18px;
-    gap: 14px;
+    gap: 16px;
+    box-sizing: border-box;
   }
 }
 
@@ -801,7 +810,7 @@ html, body {
   }
 
   .presentation-card {
-    padding: 20px 14px 8px 14px;
+    padding: 18px;
     gap: 14px;
   }
 }
