@@ -410,6 +410,22 @@ html, body {
   .phrase-mobile {
     display: inline;
   }
+
+  /* En móvil los enlaces se convierten en lista vertical 1-columna (Linktree puro) */
+  .links-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .link-item {
+    padding: 13px 16px;
+    border-radius: 16px;
+  }
+
+  .presentation-card {
+    padding: 24px 16px;
+    gap: 16px;
+  }
 }
 
 #glCanvas {
