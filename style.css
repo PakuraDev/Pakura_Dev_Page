@@ -695,14 +695,6 @@ html, body {
   padding: 2px 0;
 }
 
-/* Frame vacío de 16px abajo para padding */
-.bottom-spacer {
-  height: 16px;
-  min-height: 16px;
-  width: 100%;
-  flex-shrink: 0;
-}
-
 /* ==========================================================================
    DESKTOP / PC (min-width: 960px) - Alto completo 100% y distribución horizontal
    ========================================================================== */
