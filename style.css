@@ -697,11 +697,9 @@ html, body {
   font-size: var(--type-caption-size);
   font-weight: var(--type-caption-weight);
   letter-spacing: var(--type-caption-spacing);
-  line-height: var(--type-caption-line-height);
+  line-height: 1.35;
   color: rgba(255, 255, 255, 0.45);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  word-break: break-word;
 }
 
 .link-arrow {
