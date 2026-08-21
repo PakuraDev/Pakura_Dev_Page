@@ -187,7 +187,7 @@ html, body {
 .bento-grid {
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
+  align-items: stretch;
   gap: 24px;
   width: 100%;
   min-height: 100%;
@@ -205,9 +205,10 @@ html, body {
 
 /* Categoría 1: Tarjeta de Presentación */
 .presentation-card {
-  width: 380px;
+  width: 440px;
   flex-shrink: 0;
-  padding: 24px;
+  min-height: 100%;
+  padding: 28px 24px;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -220,12 +221,13 @@ html, body {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 6px;
+  gap: 8px;
+  margin-bottom: 4px;
 }
 
 .avatar-wrapper {
-  width: 80px;
-  height: 80px;
+  width: 88px;
+  height: 88px;
   border-radius: 50%;
   padding: 2.5px;
   background: linear-gradient(135deg, var(--aqua-500), rgba(255, 255, 255, 0.1));
@@ -249,14 +251,14 @@ html, body {
 }
 
 .profile-name {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
   color: var(--blanco-50);
   letter-spacing: -0.3px;
 }
 
 .profile-bio {
-  font-size: 13.5px;
+  font-size: 14px;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.65);
   line-height: 1.4;
@@ -266,14 +268,14 @@ html, body {
 .links-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+  gap: 12px;
 }
 
 .link-item {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 12px;
+  padding: 12px 14px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 14px;
@@ -295,8 +297,8 @@ html, body {
 }
 
 .link-icon {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-radius: 9px;
   background: rgba(255, 255, 255, 0.06);
   display: flex;
@@ -319,7 +321,7 @@ html, body {
 }
 
 .link-title {
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--blanco-50);
   white-space: nowrap;
@@ -328,7 +330,7 @@ html, body {
 }
 
 .link-url {
-  font-size: 10.5px;
+  font-size: 11px;
   color: rgba(255, 255, 255, 0.45);
   white-space: nowrap;
   overflow: hidden;
@@ -348,10 +350,11 @@ html, body {
 
 /* Tarjeta / Sección de Detalles */
 .details-card {
+  margin-top: auto;
   background: rgba(255, 255, 255, 0.025);
   border: 1px dashed rgba(255, 255, 255, 0.12);
   border-radius: 14px;
-  padding: 12px 14px;
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -382,18 +385,20 @@ html, body {
 
   .bento-grid {
     flex-direction: column;
-    align-items: center;
-    max-width: 440px;
+    align-items: stretch;
+    width: 100%;
+    max-width: 480px;
     margin: 0 auto;
     gap: 16px;
   }
 
   .presentation-card {
     width: 100%;
-    max-width: 440px;
-    padding: 20px 16px;
+    max-width: 100%;
+    min-height: 100%;
+    padding: 24px 18px;
     border-radius: 18px;
-    gap: 16px;
+    gap: 18px;
   }
 }
 
