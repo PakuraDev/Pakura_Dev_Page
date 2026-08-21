@@ -633,75 +633,110 @@ function initLilyPads() {
 initLilyPads();
 
 // ==========================================
-// Control de Audio Ambiental y Pantalla Inicial
+// Control de Audio Ambiental y Pantalla Inicial (Modo Mar)
 // ==========================================
 function initBackgroundAudio() {
   const bgAudio = document.getElementById('bgAudio');
   const btnVerMar = document.getElementById('btnVerMar');
   const pageContainer = document.getElementById('pageContainer');
 
-  if (!bgAudio) return;
+  if (!bgAudio || !pageContainer) return;
 
   const TARGET_VOLUME = 0.70;
   bgAudio.volume = 0;
-  let isPlaying = false;
+  let isSeaModeActive = false;
   let fadeInterval = null;
 
-  function fadeInAudio(target = TARGET_VOLUME, duration = 1200) {
-    if (fadeInterval) clearInterval(fadeInterval);
+  function clearFade() {
+    if (fadeInterval) {
+      clearInterval(fadeInterval);
+      fadeInterval = null;
+    }
+  }
+
+  function fadeInAudio(target = TARGET_VOLUME, duration = 800) {
+    clearFade();
     const stepTime = 50;
-    const stepVolume = (target - bgAudio.volume) / (duration / stepTime);
+    const steps = Math.max(1, duration / stepTime);
+    const stepVolume = (target - bgAudio.volume) / steps;
 
     fadeInterval = setInterval(() => {
-      if (bgAudio.volume + stepVolume >= target) {
+      if (!isSeaModeActive) {
+        clearFade();
+        stopAudioImmediate();
+        return;
+      }
+      const nextVol = bgAudio.volume + stepVolume;
+      if (nextVol >= target) {
         bgAudio.volume = target;
-        clearInterval(fadeInterval);
-        fadeInterval = null;
+        clearFade();
       } else {
-        bgAudio.volume += stepVolume;
+        bgAudio.volume = Math.min(target, Math.max(0, nextVol));
       }
     }, stepTime);
   }
 
-  function fadeOutAudio(duration = 600) {
-    if (fadeInterval) clearInterval(fadeInterval);
+  function fadeOutAudio(duration = 400) {
+    clearFade();
+    const currentVol = bgAudio.volume;
+    if (currentVol <= 0.01) {
+      stopAudioImmediate();
+      return;
+    }
+
     const stepTime = 50;
-    const startVolume = bgAudio.volume;
-    const stepVolume = startVolume / (duration / stepTime);
+    const steps = Math.max(1, duration / stepTime);
+    const stepVolume = currentVol / steps;
 
     fadeInterval = setInterval(() => {
-      if (bgAudio.volume - stepVolume <= 0) {
-        bgAudio.volume = 0;
-        bgAudio.pause();
-        isPlaying = false;
-        clearInterval(fadeInterval);
-        fadeInterval = null;
+      const nextVol = bgAudio.volume - stepVolume;
+      if (nextVol <= 0.02) {
+        stopAudioImmediate();
       } else {
-        bgAudio.volume -= stepVolume;
+        bgAudio.volume = Math.max(0, Math.min(1, nextVol));
       }
     }, stepTime);
+  }
+
+  function stopAudioImmediate() {
+    clearFade();
+    try {
+      bgAudio.volume = 0;
+      bgAudio.pause();
+    } catch (err) {
+      // Ignorar errores de pausa si ya está pausado
+    }
   }
 
   function startAudio() {
+    isSeaModeActive = true;
     if (bgAudio.paused) {
       const playPromise = bgAudio.play();
       if (playPromise !== undefined) {
         playPromise
           .then(() => {
-            isPlaying = true;
-            fadeInAudio();
+            if (!isSeaModeActive) {
+              stopAudioImmediate();
+            } else {
+              fadeInAudio();
+            }
           })
           .catch(() => {
-            isPlaying = false;
+            // El navegador bloqueó autoplay o falló
           });
       }
     } else {
-      isPlaying = true;
       fadeInAudio();
     }
   }
 
+  function stopAudio() {
+    isSeaModeActive = false;
+    fadeOutAudio();
+  }
+
   function enterSeaMode() {
+    isSeaModeActive = true;
     pageContainer.classList.add('sea-mode');
     // Restaurar cualquier tarjeta oculta previamente
     document.querySelectorAll('.bento-card').forEach(card => {
@@ -711,7 +746,7 @@ function initBackgroundAudio() {
   }
 
   function exitSeaMode() {
-    if (!pageContainer.classList.contains('sea-mode')) return;
+    isSeaModeActive = false;
     pageContainer.classList.remove('sea-mode');
     // Restaurar visibilidad de todas las tarjetas para el modo normal
     document.querySelectorAll('.bento-card').forEach(card => {
@@ -720,7 +755,7 @@ function initBackgroundAudio() {
     stopAudio();
   }
 
-  if (btnVerMar && pageContainer) {
+  if (btnVerMar) {
     // Al pulsar el botón de ver el mar se conmuta el Modo Mar
     btnVerMar.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -730,31 +765,31 @@ function initBackgroundAudio() {
         enterSeaMode();
       }
     });
+  }
 
-    // En Modo Mar: al pulsar una card, esa card desaparece
-    const bentoGrid = document.querySelector('.bento-grid');
-    if (bentoGrid) {
-      bentoGrid.addEventListener('click', (e) => {
-        if (pageContainer.classList.contains('sea-mode')) {
-          const card = e.target.closest('.bento-card');
-          if (card) {
-            e.stopPropagation();
-            e.preventDefault();
-            card.classList.add('card-hidden');
-          }
-        }
-      });
-    }
-
-    // Al hacer clic en cualquier otro lado fuera de las tarjetas, vuelve al modo normal
-    window.addEventListener('click', (e) => {
+  // En Modo Mar: al pulsar una card, esa card desaparece
+  const bentoGrid = document.querySelector('.bento-grid');
+  if (bentoGrid) {
+    bentoGrid.addEventListener('click', (e) => {
       if (pageContainer.classList.contains('sea-mode')) {
-        if (!e.target.closest('.header-btn')) {
-          exitSeaMode();
+        const card = e.target.closest('.bento-card');
+        if (card && !card.classList.contains('card-hidden')) {
+          e.stopPropagation();
+          e.preventDefault();
+          card.classList.add('card-hidden');
         }
       }
     });
   }
+
+  // Al hacer clic en cualquier otro lado fuera de las tarjetas activas, vuelve al modo normal
+  window.addEventListener('click', (e) => {
+    if (pageContainer.classList.contains('sea-mode')) {
+      if (!e.target.closest('.header-btn')) {
+        exitSeaMode();
+      }
+    }
+  });
 }
 
 // Inicializar audio y eventos de navegación
