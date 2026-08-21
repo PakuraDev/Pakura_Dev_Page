@@ -205,13 +205,13 @@ html, body {
 
 /* Categoría 1: Tarjeta de Presentación */
 .presentation-card {
-  width: 440px;
+  width: 480px;
   flex-shrink: 0;
   min-height: 100%;
   padding: 28px 24px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
@@ -229,9 +229,9 @@ html, body {
   width: 88px;
   height: 88px;
   border-radius: 50%;
-  padding: 2.5px;
-  background: linear-gradient(135deg, var(--aqua-500), rgba(255, 255, 255, 0.1));
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  padding: 0;
+  background: transparent;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
   margin-bottom: 6px;
   overflow: hidden;
   display: flex;
@@ -348,31 +348,13 @@ html, body {
   color: var(--aqua-500);
 }
 
-/* Tarjeta / Sección de Detalles */
-.details-card {
-  margin-top: auto;
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px dashed rgba(255, 255, 255, 0.12);
-  border-radius: 14px;
-  padding: 14px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.details-title {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--aqua-500);
-}
-
+/* Texto de Detalles */
 .details-text {
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.55;
-  color: rgba(255, 255, 255, 0.68);
+  color: rgba(255, 255, 255, 0.58);
   font-weight: 400;
+  padding: 4px 2px;
 }
 
 /* Responsive para Tablets y Móviles (< 960px) */
