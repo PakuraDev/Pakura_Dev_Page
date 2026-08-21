@@ -483,6 +483,14 @@ html, body {
   color: rgba(26, 26, 26, 0.72);
 }
 
+.page-container.sea-mode .category-title {
+  color: var(--negro-800);
+}
+
+.page-container.sea-mode .category-subtitle {
+  color: rgba(26, 26, 26, 0.72);
+}
+
 .page-container.sea-mode .details-text {
   color: rgba(26, 26, 26, 0.68);
 }
@@ -523,8 +531,9 @@ html, body {
   color: var(--negro-800);
 }
 
-/* Categoría 1: Tarjeta de Presentación */
-.presentation-card {
+/* Categoría 1 y tarjetas genéricas Bento */
+.presentation-card,
+.category-card {
   width: 440px;
   max-width: 100%;
   flex-shrink: 0;
@@ -532,6 +541,31 @@ html, body {
   flex-direction: column;
   box-sizing: border-box;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.category-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.category-title {
+  font-family: var(--font-family-base);
+  font-size: var(--type-h4-size);
+  font-weight: var(--type-h4-weight);
+  letter-spacing: var(--type-h4-spacing);
+  line-height: var(--type-h4-line-height);
+  color: var(--blanco-50);
+}
+
+.category-subtitle {
+  font-family: var(--font-family-base);
+  font-size: var(--type-p-small-size);
+  font-weight: var(--type-p-small-weight);
+  letter-spacing: var(--type-p-small-spacing);
+  line-height: var(--type-p-small-line-height);
+  color: rgba(255, 255, 255, 0.65);
 }
 
 /* Cabecera de perfil / presentación */
@@ -718,7 +752,8 @@ html, body {
     min-height: 100%;
   }
 
-  .presentation-card {
+  .presentation-card,
+  .category-card {
     width: 440px;
     height: 100%;
     min-height: 100%;
@@ -761,7 +796,8 @@ html, body {
     padding: 0;
   }
 
-  .presentation-card {
+  .presentation-card,
+  .category-card {
     width: 100%;
     max-width: 480px;
     height: auto;
@@ -809,7 +845,8 @@ html, body {
     border-radius: 14px;
   }
 
-  .presentation-card {
+  .presentation-card,
+  .category-card {
     padding: 18px;
     gap: 14px;
   }
